@@ -1,0 +1,37 @@
+# WANPulse — Availability Gauges Card
+#
+# Two needle gauges showing uptime percentage.
+# Green (>99%) = excellent, Yellow (>95%) = acceptable, Red (<95%) = problems.
+#
+# How to add:
+#   1. Open your dashboard, click pencil icon (Edit)
+#   2. Click "+ Add Card" > "Manual"
+#   3. Paste this YAML and click "Save"
+
+type: grid
+columns: 2
+square: false
+cards:
+  - type: gauge
+    entity: sensor.wanpulse_availability_1h
+    name: "Uptime: Last Hour"
+    unit: "%"
+    min: 0
+    max: 100
+    needle: true
+    severity:
+      green: 99
+      yellow: 95
+      red: 0
+
+  - type: gauge
+    entity: sensor.wanpulse_availability_24h
+    name: "Uptime: Last 24 Hours"
+    unit: "%"
+    min: 0
+    max: 100
+    needle: true
+    severity:
+      green: 99
+      yellow: 95
+      red: 0

@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up WANPulse — Internet Monitor",
+        "description": "WANPulse monitors your internet connection by periodically probing external servers. It measures latency, packet loss, jitter and detects outages.\n\n**Probe targets** — enter one target per line in the format:\n`host, label, method`\n\n- **host** — IP address or hostname to probe (e.g. `1.1.1.1`, `google.com`)\n- **label** — a friendly name shown in Home Assistant (e.g. `Cloudflare`)\n- **method** — probe type: `tcp` (default, recommended), `http`, or `dns`\n\n**Examples:**\n- `1.1.1.1, Cloudflare DNS, tcp` — tests TCP connection to Cloudflare\n- `https://www.google.com, Google, http` — tests HTTP response from Google\n- `www.google.com, Google DNS, dns` — tests DNS resolution for Google",
+        "data": {
+          "targets": "Probe targets",
+          "scan_interval": "Scan interval (seconds)"
+        },
+        "data_description": {
+          "targets": "One target per line in the format: host, label, method. The default targets (Cloudflare and Google DNS) are a good starting point for most users.",
+          "scan_interval": "How often WANPulse checks your internet (10–3600 seconds). Default 60s is a good balance between accuracy and resource usage."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure WANPulse targets",
+        "description": "Edit your probe targets. One target per line: `host, label, method`\n\n- **TCP** (recommended) — works with any IP or hostname, tests connection to port 443\n- **HTTP** — provide a full URL, tests HTTP HEAD response\n- **DNS** — provide a hostname, tests DNS resolution time",
+        "data": {
+          "targets": "Probe targets"
+        },
+        "data_description": {
+          "targets": "One target per line: host, label, method. You can add up to 10 targets."
+        }
+      }
+    },
+    "error": {
+      "no_targets": "At least one target is required. Enter a host like: 1.1.1.1, Cloudflare, tcp",
+      "too_many_targets": "Maximum {max_targets} targets allowed. Remove some targets and try again.",
+      "invalid_host": "One or more targets have an invalid or empty host field.",
+      "invalid_host_format": "Invalid host format. Use an IP address (e.g. 1.1.1.1), hostname (e.g. google.com), or URL (e.g. https://google.com) depending on probe method.",
+      "invalid_method": "Invalid probe method. Supported methods: tcp, http, dns.",
+      "all_targets_unreachable": "None of the targets could be reached. Check your internet connection and target addresses. Unreachable: {unreachable}"
+    },
+    "abort": {
+      "already_configured": "WANPulse is already configured. You can modify targets via Reconfigure or change settings via Configure.",
+      "entry_not_found": "Configuration entry not found.",
+      "reconfigure_successful": "Targets updated successfully. WANPulse will now monitor the new targets."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "WANPulse — Monitoring Settings",
+        "description": "Fine-tune how WANPulse monitors your internet connection. The defaults work well for most users.",
+        "data": {
+          "scan_interval": "Scan interval (seconds)",
+          "timeout": "Probe timeout (seconds)",
+          "probe_count": "Probes per cycle",
+          "failure_threshold": "Failures before outage"
+        },
+        "data_description": {
+          "scan_interval": "How often WANPulse checks your connection. Lower = more responsive but more traffic. Recommended: 30–120 seconds.",
+          "timeout": "Maximum time to wait for a single probe response. Increase if you have a slow connection. Default: 10 seconds.",
+          "probe_count": "Number of probes sent per target each cycle. More probes = more accurate metrics but more traffic. Default: 3.",
+          "failure_threshold": "How many consecutive failed cycles before WANPulse declares an outage. Higher = fewer false alarms. Default: 3."
+        }
+      }
+    }
+  },
+  "issues": {
+    "no_valid_targets": {
+      "title": "WANPulse: No valid targets configured",
+      "description": "WANPulse could not start because no valid probe targets are configured. Go to Settings > Devices & Services > WANPulse > three-dot menu > Reconfigure to add at least one valid target."
+    },
+    "aggressive_polling": {
+      "title": "WANPulse: Very short polling interval",
+      "description": "The configured scan interval ({scan_interval}s) is very aggressive. This may cause excessive network traffic and CPU usage. Consider increasing it to at least 30 seconds via Settings > Devices & Services > WANPulse > Configure."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "wan_status": {
+        "name": "Internet connection"
+      },
+      "target_status": {
+        "name": "{target} reachable"
+      }
+    },
+    "sensor": {
+      "average_latency": {
+        "name": "Internet latency"
+      },
+      "packet_loss": {
+        "name": "Internet packet loss"
+      },
+      "jitter": {
+        "name": "Internet jitter"
+      },
+      "availability_1h": {
+        "name": "Availability last hour"
+      },
+      "availability_24h": {
+        "name": "Availability last 24 hours"
+      },
+      "outage_count_24h": {
+        "name": "Outages last 24 hours"
+      },
+      "min_latency": {
+        "name": "Internet min latency"
+      },
+      "max_latency": {
+        "name": "Internet max latency"
+      },
+      "consecutive_failures": {
+        "name": "Consecutive probe failures"
+      },
+      "outage_duration_24h": {
+        "name": "Total outage time (24h)"
+      },
+      "target_latency": {
+        "name": "{target} latency"
+      },
+      "target_packet_loss": {
+        "name": "{target} packet loss"
+      },
+      "target_jitter": {
+        "name": "{target} jitter"
+      },
+      "target_availability_1h": {
+        "name": "{target} availability (1h)"
+      }
+    },
+    "button": {
+      "probe_now": {
+        "name": "Test connection now"
+      }
+    }
+  }
+}

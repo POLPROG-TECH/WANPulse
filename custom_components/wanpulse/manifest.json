@@ -1,0 +1,14 @@
+{
+  "domain": "wanpulse",
+  "name": "WANPulse",
+  "codeowners": ["@polprog-tech"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/polprog-tech/WANPulse",
+  "homeassistant": "2024.4.0",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/polprog-tech/WANPulse/issues",
+  "requirements": [],
+  "version": "1.1.0"
+}

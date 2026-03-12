@@ -1,0 +1,18 @@
+# WANPulse — Latency & Jitter Chart Card
+#
+# A combined history graph showing latency and jitter over 24 hours.
+# Useful for spotting patterns (e.g., congestion during peak hours).
+#
+# How to add:
+#   1. Open your dashboard, click pencil icon (Edit)
+#   2. Click "+ Add Card" > "Manual"
+#   3. Paste this YAML and click "Save"
+
+type: history-graph
+title: "📊 Latency & Jitter — Last 24 Hours"
+hours_to_show: 24
+entities:
+  - entity: sensor.wanpulse_average_latency
+    name: "Latency (ms)"
+  - entity: sensor.wanpulse_jitter
+    name: "Jitter (ms)"

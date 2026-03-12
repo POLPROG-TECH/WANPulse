@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wanpulse"
+version = "1.0.0"
+description = "Home Assistant integration for WAN/Internet quality monitoring"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "A",      # flake8-builtins
+    "ASYNC",  # flake8-async
+    "B",      # flake8-bugbear
+    "BLE",    # flake8-blind-except
+    "C4",     # flake8-comprehensions
+    "D",      # pydocstyle
+    "E",      # pycodestyle
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "RUF",    # ruff-specific
+    "S",      # flake8-bandit
+    "SIM",    # flake8-simplify
+    "T20",    # flake8-print
+    "UP",     # pyupgrade
+    "W",      # pycodestyle warnings
+]
+ignore = [
+    "ASYNC109", # timeout parameter name is correct for probe API
+    "D100",   # missing module docstring (relaxed for tests)
+    "D103",   # missing function docstring (relaxed for tests)
+    "D104",   # missing package docstring
+    "S101",   # assert usage (needed in tests)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D", "S"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+plugins = []
+
+[[tool.mypy.overrides]]
+module = [
+    "homeassistant.*",
+    "voluptuous.*",
+    "aiohttp.*",
+    "pytest_homeassistant_custom_component.*",
+]
+ignore_missing_imports = true

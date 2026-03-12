@@ -1,0 +1,182 @@
+# =============================================================
+# WANPulse Dashboard for Home Assistant
+# =============================================================
+#
+# HOW TO USE:
+# 1. Go to Settings > Dashboards > Add Dashboard (or edit an existing one)
+# 2. Click the three-dot menu (top right) > Edit Dashboard
+# 3. Click the three-dot menu again > Raw configuration editor
+# 4. Paste this YAML content
+# 5. Save
+#
+# ENTITY IDs:
+# WANPulse uses stable, language-independent entity IDs based on internal keys.
+# If an entity shows "not found", go to Settings > Devices > WANPulse to check
+# your actual entity IDs. See README FAQ for migration help.
+#
+# OPTIONAL: To use per-target sensors and charts, first enable them:
+# Settings > Devices & Services > WANPulse > Entities > click disabled entity > Enable
+#
+# =============================================================
+
+title: WANPulse
+views:
+  - title: Internet Monitor
+    path: wanpulse
+    icon: mdi:wan
+    badges: []
+    cards:
+
+      # --- Row 1: Status Overview ---
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: binary_sensor.wanpulse_wan_status
+            name: Internet Status
+            icon: mdi:web
+            state_color: true
+
+          - type: entity
+            entity: sensor.wanpulse_average_latency
+            name: Latency
+            icon: mdi:timer-outline
+            unit: ms
+
+          - type: entity
+            entity: sensor.wanpulse_packet_loss
+            name: Packet Loss
+            icon: mdi:package-variant-remove
+            unit: "%"
+
+          - type: entity
+            entity: sensor.wanpulse_jitter
+            name: Jitter
+            icon: mdi:sine-wave
+            unit: ms
+
+      # --- Row 2: Availability Gauges ---
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.wanpulse_availability_1h
+            name: Uptime (1h)
+            min: 0
+            max: 100
+            unit: "%"
+            severity:
+              green: 99
+              yellow: 95
+              red: 0
+            needle: true
+
+          - type: gauge
+            entity: sensor.wanpulse_availability_24h
+            name: Uptime (24h)
+            min: 0
+            max: 100
+            unit: "%"
+            severity:
+              green: 99
+              yellow: 95
+              red: 0
+            needle: true
+
+          - type: entity
+            entity: sensor.wanpulse_outage_count_24h
+            name: Outages (24h)
+            icon: mdi:alert-circle-outline
+
+      # --- Row 3: Latency History Chart ---
+      - type: history-graph
+        title: Latency History (24h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.wanpulse_average_latency
+            name: Avg Latency
+
+      # --- Row 4: Packet Loss & Jitter History ---
+      - type: horizontal-stack
+        cards:
+          - type: history-graph
+            title: Packet Loss (24h)
+            hours_to_show: 24
+            entities:
+              - entity: sensor.wanpulse_packet_loss
+                name: Packet Loss
+
+          - type: history-graph
+            title: Jitter (24h)
+            hours_to_show: 24
+            entities:
+              - entity: sensor.wanpulse_jitter
+                name: Jitter
+
+      # --- Row 5: Availability History ---
+      - type: history-graph
+        title: Availability History (24h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.wanpulse_availability_1h
+            name: 1h Availability
+          - entity: sensor.wanpulse_availability_24h
+            name: 24h Availability
+
+      # --- Row 6: Manual Probe & Details ---
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: button.wanpulse_probe_now
+            name: Test Connection Now
+            icon: mdi:refresh-circle
+            tap_action:
+              action: toggle
+            show_state: false
+
+          - type: entities
+            title: Connection Details
+            entities:
+              - entity: binary_sensor.wanpulse_wan_status
+                name: Internet Status
+              - entity: sensor.wanpulse_average_latency
+                name: Latency (avg)
+              - entity: sensor.wanpulse_packet_loss
+                name: Packet Loss
+              - entity: sensor.wanpulse_jitter
+                name: Jitter
+              - entity: sensor.wanpulse_availability_1h
+                name: Uptime (1h)
+              - entity: sensor.wanpulse_availability_24h
+                name: Uptime (24h)
+              - entity: sensor.wanpulse_outage_count_24h
+                name: Outages (24h)
+
+      # --- Row 7: About ---
+      - type: markdown
+        title: About WANPulse
+        content: >
+          **WANPulse** monitors your internet connection by periodically probing
+          external servers (Cloudflare, Google, etc.) using TCP, HTTP, or DNS.
+
+
+          **What the sensors mean:**
+
+          - **Internet connection** — Is your internet reachable right now?
+
+          - **Latency** — How fast your connection responds (lower = better, <50ms is great)
+
+          - **Packet loss** — Percentage of failed probes (0% = perfect)
+
+          - **Jitter** — Variation in latency (lower = more stable)
+
+          - **Availability** — Percentage of time internet was up in the time window
+
+          - **Outages** — Number of detected connection drops
+
+
+          **Test Connection Now** button runs an immediate probe cycle — useful when
+          troubleshooting connectivity issues or after changing router settings.
+
+
+          Configure targets and settings via:
+
+          *Settings → Devices & Services → WANPulse → Configure*

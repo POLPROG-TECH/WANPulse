@@ -1,0 +1,107 @@
+# WANPulse — All-in-One Compact Card
+#
+# A single card with everything: status tiles, gauges, chart, and button.
+# Perfect if you want one card on your main dashboard that shows everything.
+#
+# How to add:
+#   1. Open your dashboard, click pencil icon (Edit)
+#   2. Click "+ Add Card" > "Manual"
+#   3. Paste this YAML and click "Save"
+#
+# Entity IDs are stable and language-independent.
+# If they don't match, go to Settings > Devices > WANPulse to verify.
+
+type: vertical-stack
+cards:
+  # Status tiles
+  - type: grid
+    columns: 4
+    square: false
+    cards:
+      - type: tile
+        entity: binary_sensor.wanpulse_wan_status
+        name: Internet
+        icon: mdi:wan
+        color: green
+        vertical: true
+
+      - type: tile
+        entity: sensor.wanpulse_average_latency
+        name: Latency
+        icon: mdi:speedometer
+        color: cyan
+        vertical: true
+
+      - type: tile
+        entity: sensor.wanpulse_packet_loss
+        name: Loss
+        icon: mdi:package-variant-remove
+        color: orange
+        vertical: true
+
+      - type: tile
+        entity: sensor.wanpulse_jitter
+        name: Jitter
+        icon: mdi:pulse
+        color: deep-purple
+        vertical: true
+
+  # Availability gauges
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: gauge
+        entity: sensor.wanpulse_availability_1h
+        name: "1h Uptime"
+        min: 0
+        max: 100
+        needle: true
+        severity:
+          green: 99
+          yellow: 95
+          red: 0
+
+      - type: gauge
+        entity: sensor.wanpulse_availability_24h
+        name: "24h Uptime"
+        min: 0
+        max: 100
+        needle: true
+        severity:
+          green: 99
+          yellow: 95
+          red: 0
+
+      - type: entity
+        entity: sensor.wanpulse_outage_count_24h
+        name: "Outages (24h)"
+        icon: mdi:alert-circle-outline
+
+  # Latency + jitter chart
+  - type: history-graph
+    title: "📊 Latency & Jitter — 24h"
+    hours_to_show: 24
+    entities:
+      - entity: sensor.wanpulse_average_latency
+        name: Latency
+      - entity: sensor.wanpulse_jitter
+        name: Jitter
+
+  # Packet loss chart
+  - type: history-graph
+    title: "📉 Packet Loss — 24h"
+    hours_to_show: 24
+    entities:
+      - entity: sensor.wanpulse_packet_loss
+        name: Packet Loss
+
+  # Test button
+  - type: button
+    entity: button.wanpulse_probe_now
+    name: "🔄 Test Connection Now"
+    icon: mdi:network-check
+    tap_action:
+      action: toggle
+    show_state: false
+    icon_height: 40px

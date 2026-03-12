@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfiguracja WANPulse — Monitor Internetu",
+        "description": "WANPulse monitoruje połączenie internetowe, okresowo sprawdzając zewnętrzne serwery. Mierzy opóźnienia, utratę pakietów, jitter i wykrywa awarie.\n\n**Cele sondowania** — wpisz jeden cel na linię w formacie:\n`host, etykieta, metoda`\n\n- **host** — adres IP lub nazwa hosta (np. `1.1.1.1`, `google.com`)\n- **etykieta** — przyjazna nazwa wyświetlana w Home Assistant (np. `Cloudflare`)\n- **metoda** — typ sondy: `tcp` (domyślna, zalecana), `http` lub `dns`\n\n**Przykłady:**\n- `1.1.1.1, Cloudflare DNS, tcp` — test połączenia TCP do Cloudflare\n- `https://www.google.com, Google, http` — test odpowiedzi HTTP od Google\n- `www.google.com, Google DNS, dns` — test rozwiązywania DNS dla Google",
+        "data": {
+          "targets": "Cele sondowania",
+          "scan_interval": "Interwał skanowania (sekundy)"
+        },
+        "data_description": {
+          "targets": "Jeden cel na linię w formacie: host, etykieta, metoda. Domyślne cele (Cloudflare i Google DNS) to dobry punkt startowy dla większości użytkowników.",
+          "scan_interval": "Jak często WANPulse sprawdza internet (10–3600 sekund). Domyślnie 60s to dobry kompromis między dokładnością a zużyciem zasobów."
+        }
+      },
+      "reconfigure": {
+        "title": "Zmiana celów WANPulse",
+        "description": "Edytuj cele sondowania. Jeden cel na linię: `host, etykieta, metoda`\n\n- **TCP** (zalecana) — działa z każdym IP lub hostem, testuje połączenie na port 443\n- **HTTP** — podaj pełny URL, testuje odpowiedź HTTP HEAD\n- **DNS** — podaj nazwę hosta, testuje czas rozwiązywania DNS",
+        "data": {
+          "targets": "Cele sondowania"
+        },
+        "data_description": {
+          "targets": "Jeden cel na linię: host, etykieta, metoda. Możesz dodać do 10 celów."
+        }
+      }
+    },
+    "error": {
+      "no_targets": "Wymagany jest co najmniej jeden cel. Wpisz host, np.: 1.1.1.1, Cloudflare, tcp",
+      "too_many_targets": "Maksymalnie {max_targets} celów. Usuń część i spróbuj ponownie.",
+      "invalid_host": "Jeden lub więcej celów ma nieprawidłowe lub puste pole hosta.",
+      "invalid_host_format": "Nieprawidłowy format hosta. Użyj adresu IP (np. 1.1.1.1), nazwy hosta (np. google.com) lub URL (np. https://google.com) w zależności od metody.",
+      "invalid_method": "Nieprawidłowa metoda sondowania. Obsługiwane metody: tcp, http, dns.",
+      "all_targets_unreachable": "Żaden z celów nie jest osiągalny. Sprawdź połączenie internetowe i adresy celów. Nieosiągalne: {unreachable}"
+    },
+    "abort": {
+      "already_configured": "WANPulse jest już skonfigurowany. Możesz zmienić cele przez Rekonfiguracja lub ustawienia przez Konfiguruj.",
+      "entry_not_found": "Nie znaleziono wpisu konfiguracji.",
+      "reconfigure_successful": "Cele zaktualizowane. WANPulse będzie teraz monitorować nowe cele."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "WANPulse — Ustawienia monitorowania",
+        "description": "Dostosuj sposób monitorowania połączenia internetowego. Domyślne wartości sprawdzają się u większości użytkowników.",
+        "data": {
+          "scan_interval": "Interwał skanowania (sekundy)",
+          "timeout": "Limit czasu sondy (sekundy)",
+          "probe_count": "Sondy na cykl",
+          "failure_threshold": "Awarii do wykrycia przerwy"
+        },
+        "data_description": {
+          "scan_interval": "Jak często WANPulse sprawdza połączenie. Mniej = szybsza reakcja, ale więcej ruchu sieciowego. Zalecane: 30–120 sekund.",
+          "timeout": "Maksymalny czas oczekiwania na odpowiedź sondy. Zwiększ przy wolnym połączeniu. Domyślnie: 10 sekund.",
+          "probe_count": "Liczba sond wysyłanych do każdego celu w cyklu. Więcej sond = dokładniejsze metryki, ale więcej ruchu. Domyślnie: 3.",
+          "failure_threshold": "Ile kolejnych nieudanych cykli przed ogłoszeniem awarii. Więcej = mniej fałszywych alarmów. Domyślnie: 3."
+        }
+      }
+    }
+  },
+  "issues": {
+    "no_valid_targets": {
+      "title": "WANPulse: Brak prawidłowych celów",
+      "description": "WANPulse nie mógł się uruchomić, ponieważ nie skonfigurowano prawidłowych celów sondowania. Przejdź do Ustawienia > Urządzenia i usługi > WANPulse > menu z trzema kropkami > Rekonfiguracja, aby dodać co najmniej jeden prawidłowy cel."
+    },
+    "aggressive_polling": {
+      "title": "WANPulse: Bardzo krótki interwał sondowania",
+      "description": "Skonfigurowany interwał skanowania ({scan_interval}s) jest bardzo agresywny. Może powodować nadmierny ruch sieciowy i obciążenie procesora. Rozważ zwiększenie go do co najmniej 30 sekund w Ustawienia > Urządzenia i usługi > WANPulse > Konfiguruj."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "wan_status": {
+        "name": "Połączenie internetowe"
+      },
+      "target_status": {
+        "name": "{target} — dostępność"
+      }
+    },
+    "sensor": {
+      "average_latency": {
+        "name": "Opóźnienie internetu"
+      },
+      "packet_loss": {
+        "name": "Utrata pakietów"
+      },
+      "jitter": {
+        "name": "Jitter internetu"
+      },
+      "availability_1h": {
+        "name": "Dostępność (ostatnia godzina)"
+      },
+      "availability_24h": {
+        "name": "Dostępność (ostatnie 24 godziny)"
+      },
+      "outage_count_24h": {
+        "name": "Awarie (ostatnie 24 godziny)"
+      },
+      "min_latency": {
+        "name": "Minimalne opóźnienie"
+      },
+      "max_latency": {
+        "name": "Maksymalne opóźnienie"
+      },
+      "consecutive_failures": {
+        "name": "Kolejne nieudane sondy"
+      },
+      "outage_duration_24h": {
+        "name": "Łączny czas awarii (24h)"
+      },
+      "target_latency": {
+        "name": "{target} — opóźnienie"
+      },
+      "target_packet_loss": {
+        "name": "{target} — utrata pakietów"
+      },
+      "target_jitter": {
+        "name": "{target} — jitter"
+      },
+      "target_availability_1h": {
+        "name": "{target} — dostępność (1h)"
+      }
+    },
+    "button": {
+      "probe_now": {
+        "name": "Testuj połączenie"
+      }
+    }
+  }
+}

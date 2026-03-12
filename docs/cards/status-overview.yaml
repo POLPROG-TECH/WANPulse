@@ -1,0 +1,45 @@
+# WANPulse — Status Overview Card
+#
+# A compact row of tile cards showing the key health indicators.
+# Color-coded: green = healthy, red/orange = issue detected.
+#
+# How to add:
+#   1. Open your dashboard, click pencil icon (Edit)
+#   2. Click "+ Add Card" (bottom right)
+#   3. Scroll down, click "Manual" (YAML editor)
+#   4. Paste this YAML and click "Save"
+#
+# Entity IDs are stable and language-independent.
+# If they don't match, go to Settings > Devices > WANPulse to verify.
+
+type: grid
+columns: 4
+square: false
+cards:
+  - type: tile
+    entity: binary_sensor.wanpulse_wan_status
+    name: Internet
+    icon: mdi:wan
+    color: green
+    vertical: true
+
+  - type: tile
+    entity: sensor.wanpulse_average_latency
+    name: Latency
+    icon: mdi:speedometer
+    color: cyan
+    vertical: true
+
+  - type: tile
+    entity: sensor.wanpulse_packet_loss
+    name: Packet Loss
+    icon: mdi:package-variant-remove
+    color: orange
+    vertical: true
+
+  - type: tile
+    entity: sensor.wanpulse_jitter
+    name: Jitter
+    icon: mdi:pulse
+    color: deep-purple
+    vertical: true

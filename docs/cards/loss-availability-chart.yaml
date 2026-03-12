@@ -1,0 +1,29 @@
+# WANPulse — Packet Loss & Availability Chart Card
+#
+# Side-by-side history charts: packet loss (should stay near 0%)
+# and availability (should stay near 100%).
+#
+# How to add:
+#   1. Open your dashboard, click pencil icon (Edit)
+#   2. Click "+ Add Card" > "Manual"
+#   3. Paste this YAML and click "Save"
+
+type: grid
+columns: 2
+square: false
+cards:
+  - type: history-graph
+    title: "📉 Packet Loss — 24h"
+    hours_to_show: 24
+    entities:
+      - entity: sensor.wanpulse_packet_loss
+        name: "Loss (%)"
+
+  - type: history-graph
+    title: "📈 Availability — 24h"
+    hours_to_show: 24
+    entities:
+      - entity: sensor.wanpulse_availability_1h
+        name: "1h"
+      - entity: sensor.wanpulse_availability_24h
+        name: "24h"
