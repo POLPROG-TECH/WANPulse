@@ -29,6 +29,7 @@ except ImportError:
         MILLISECONDS = "ms"
         MINUTES = "min"
 
+
 from homeassistant.const import PERCENTAGE
 
 from .entity import WANPulseEntity
@@ -271,6 +272,7 @@ class WANPulseTargetSensor(WANPulseEntity, SensorEntity):
     def suggested_object_id(self) -> str:
         """Return stable object ID independent of translations."""
         from homeassistant.util import slugify
+
         return f"{slugify(self._target_label)}_{self.entity_description.key}"
 
     @property

@@ -201,9 +201,7 @@ class TestConfigFlow:
         assert result["errors"][CONF_TARGETS] == "invalid_method"
 
     @pytest.mark.asyncio
-    async def test_user_step_all_unreachable(
-        self, hass: HomeAssistant
-    ) -> None:
+    async def test_user_step_all_unreachable(self, hass: HomeAssistant) -> None:
         """Test error when all targets are unreachable."""
         with patch(
             "custom_components.wanpulse.config_flow._test_target_reachability",

@@ -28,7 +28,7 @@
       "no_targets": "At least one target is required. Enter a host like: 1.1.1.1, Cloudflare, tcp",
       "too_many_targets": "Maximum {max_targets} targets allowed. Remove some targets and try again.",
       "invalid_host": "One or more targets have an invalid or empty host field.",
-      "invalid_host_format": "Invalid host format. Use an IP address (e.g. 1.1.1.1), hostname (e.g. google.com), or URL (e.g. https://google.com) depending on probe method.",
+      "invalid_host_format": "Invalid host format. Use an IP address, hostname, or full URL depending on probe method.",
       "invalid_method": "Invalid probe method. Supported methods: tcp, http, dns.",
       "all_targets_unreachable": "None of the targets could be reached. Check your internet connection and target addresses. Unreachable: {unreachable}"
     },

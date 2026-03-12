@@ -15,6 +15,7 @@ except ImportError:
         """Simple fallback redaction."""
         return {k: "**REDACTED**" if k in to_redact else v for k, v in data.items()}
 
+
 TO_REDACT_CONFIG = {"host", "label"}
 
 

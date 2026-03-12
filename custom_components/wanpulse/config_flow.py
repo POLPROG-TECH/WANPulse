@@ -30,6 +30,7 @@ except ImportError:
             self.config_entry = config_entry
             self.options = dict(config_entry.options)
 
+
 from .const import (
     CONF_FAILURE_THRESHOLD,
     CONF_PROBE_COUNT,
@@ -126,6 +127,7 @@ async def _test_target_reachability(
             if method == "http":
                 url = host if host.startswith(("http://", "https://")) else f"https://{host}"
                 import aiohttp
+
                 async with asyncio.timeout(timeout):
                     async with aiohttp.ClientSession() as session:
                         async with session.head(url, allow_redirects=True):
@@ -192,17 +194,13 @@ class WANPulseConfigFlow(ConfigFlow, domain=DOMAIN):
                     if len(unreachable) == len(targets):
                         errors["base"] = "all_targets_unreachable"
                     else:
-                        _LOGGER.warning(
-                            "Some targets unreachable during setup: %s", labels
-                        )
+                        _LOGGER.warning("Some targets unreachable during setup: %s", labels)
 
                 if not errors:
                     await self.async_set_unique_id(DOMAIN)
                     self._abort_if_unique_id_configured()
 
-                    scan_interval = user_input.get(
-                        CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
-                    )
+                    scan_interval = user_input.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
 
                     return self.async_create_entry(
                         title="WANPulse",
