@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Konfiguracja WANPulse — Monitor Internetu",
-        "description": "WANPulse monitoruje połączenie internetowe, okresowo sprawdzając zewnętrzne serwery. Mierzy opóźnienia, utratę pakietów, jitter i wykrywa awarie.\n\n**Cele sondowania** — wpisz jeden cel na linię w formacie:\n`host, etykieta, metoda`\n\n- **host** — adres IP lub nazwa hosta (np. `1.1.1.1`, `google.com`)\n- **etykieta** — przyjazna nazwa wyświetlana w Home Assistant (np. `Cloudflare`)\n- **metoda** — typ sondy: `tcp` (domyślna, zalecana), `http` lub `dns`\n\n**Przykłady:**\n- `1.1.1.1, Cloudflare DNS, tcp` — test połączenia TCP do Cloudflare\n- `https://www.google.com, Google, http` — test odpowiedzi HTTP od Google\n- `www.google.com, Google DNS, dns` — test rozwiązywania DNS dla Google",
+        "description": "WANPulse monitoruje połączenie internetowe, okresowo sprawdzając zewnętrzne serwery. Mierzy opóźnienia, utratę pakietów, jitter i wykrywa awarie.\n\n**Cele sondowania** — wpisz jeden cel na linię w formacie:\nhost, etykieta, metoda\n\n- **host** — adres IP lub nazwa hosta\n- **etykieta** — przyjazna nazwa wyświetlana w Home Assistant\n- **metoda** — typ sondy: tcp (domyślna, zalecana), http lub dns\n\n**Przykłady:**\n- {example_tcp}\n- {example_http}\n- {example_dns}",
         "data": {
           "targets": "Cele sondowania",
           "scan_interval": "Interwał skanowania (sekundy)"
@@ -15,7 +15,7 @@
       },
       "reconfigure": {
         "title": "Zmiana celów WANPulse",
-        "description": "Edytuj cele sondowania. Jeden cel na linię: `host, etykieta, metoda`\n\n- **TCP** (zalecana) — działa z każdym IP lub hostem, testuje połączenie na port 443\n- **HTTP** — podaj pełny URL, testuje odpowiedź HTTP HEAD\n- **DNS** — podaj nazwę hosta, testuje czas rozwiązywania DNS",
+        "description": "Edytuj cele sondowania. Jeden cel na linię: host, etykieta, metoda\n\n- **TCP** (zalecana) — działa z każdym IP lub hostem, testuje połączenie na port 443\n- **HTTP** — podaj pełny URL, testuje odpowiedź HTTP HEAD\n- **DNS** — podaj nazwę hosta, testuje czas rozwiązywania DNS",
         "data": {
           "targets": "Cele sondowania"
         },
@@ -25,10 +25,10 @@
       }
     },
     "error": {
-      "no_targets": "Wymagany jest co najmniej jeden cel. Wpisz host, np.: 1.1.1.1, Cloudflare, tcp",
+      "no_targets": "Wymagany jest co najmniej jeden cel.",
       "too_many_targets": "Maksymalnie {max_targets} celów. Usuń część i spróbuj ponownie.",
       "invalid_host": "Jeden lub więcej celów ma nieprawidłowe lub puste pole hosta.",
-      "invalid_host_format": "Nieprawidłowy format hosta. Użyj adresu IP (np. 1.1.1.1), nazwy hosta (np. google.com) lub URL (np. https://google.com) w zależności od metody.",
+      "invalid_host_format": "Nieprawidłowy format hosta. Użyj adresu IP, nazwy hosta lub pełnego URL w zależności od metody.",
       "invalid_method": "Nieprawidłowa metoda sondowania. Obsługiwane metody: tcp, http, dns.",
       "all_targets_unreachable": "Żaden z celów nie jest osiągalny. Sprawdź połączenie internetowe i adresy celów. Nieosiągalne: {unreachable}"
     },

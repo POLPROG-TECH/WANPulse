@@ -1,7 +1,7 @@
 # WANPulse
 
 <p align="center">
-  <img src="images/logo.svg" alt="WANPulse Logo" width="200" height="200">
+  <img src="custom_components/wanpulse/brand/icon.png" alt="WANPulse Logo" width="200" height="200">
 </p>
 
 <p align="center">

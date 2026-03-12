@@ -177,7 +177,11 @@ class WANPulseConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Handle the initial setup step."""
         errors: dict[str, str] = {}
-        description_placeholders: dict[str, str] = {}
+        description_placeholders: dict[str, str] = {
+            "example_tcp": "1.1.1.1, Cloudflare DNS, tcp",
+            "example_http": "https://www.google.com, Google, http",
+            "example_dns": "www.google.com, Google DNS, dns",
+        }
 
         if user_input is not None:
             targets_text = user_input.get(CONF_TARGETS, "")
@@ -241,7 +245,11 @@ class WANPulseConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="entry_not_found")
 
         errors: dict[str, str] = {}
-        description_placeholders: dict[str, str] = {}
+        description_placeholders: dict[str, str] = {
+            "example_tcp": "1.1.1.1, Cloudflare DNS, tcp",
+            "example_http": "https://www.google.com, Google, http",
+            "example_dns": "www.google.com, Google DNS, dns",
+        }
 
         if user_input is not None:
             targets_text = user_input.get(CONF_TARGETS, "")

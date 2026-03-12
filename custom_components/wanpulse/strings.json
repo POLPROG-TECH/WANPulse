@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Set up WANPulse — Internet Monitor",
-        "description": "WANPulse monitors your internet connection by periodically probing external servers. It measures latency, packet loss, jitter and detects outages.\n\n**Probe targets** — enter one target per line in the format:\n`host, label, method`\n\n- **host** — IP address or hostname to probe (e.g. `1.1.1.1`, `google.com`)\n- **label** — a friendly name shown in Home Assistant (e.g. `Cloudflare`)\n- **method** — probe type: `tcp` (default, recommended), `http`, or `dns`\n\n**Examples:**\n- `1.1.1.1, Cloudflare DNS, tcp` — tests TCP connection to Cloudflare\n- `https://www.google.com, Google, http` — tests HTTP response from Google\n- `www.google.com, Google DNS, dns` — tests DNS resolution for Google",
+        "description": "WANPulse monitors your internet connection by periodically probing external servers. It measures latency, packet loss, jitter and detects outages.\n\n**Probe targets** — enter one target per line in the format:\nhost, label, method\n\n- **host** — IP address or hostname to probe\n- **label** — a friendly name shown in Home Assistant\n- **method** — probe type: tcp (default, recommended), http, or dns\n\n**Examples:**\n- {example_tcp}\n- {example_http}\n- {example_dns}",
         "data": {
           "targets": "Probe targets",
           "scan_interval": "Scan interval (seconds)"
@@ -15,7 +15,7 @@
       },
       "reconfigure": {
         "title": "Reconfigure WANPulse targets",
-        "description": "Edit your probe targets. One target per line: `host, label, method`\n\n- **TCP** (recommended) — works with any IP or hostname, tests connection to port 443\n- **HTTP** — provide a full URL, tests HTTP HEAD response\n- **DNS** — provide a hostname, tests DNS resolution time",
+        "description": "Edit your probe targets. One target per line: host, label, method\n\n- **TCP** (recommended) — works with any IP or hostname, tests connection to port 443\n- **HTTP** — provide a full URL, tests HTTP HEAD response\n- **DNS** — provide a hostname, tests DNS resolution time",
         "data": {
           "targets": "Probe targets"
         },
@@ -25,7 +25,7 @@
       }
     },
     "error": {
-      "no_targets": "At least one target is required. Enter a host like: 1.1.1.1, Cloudflare, tcp",
+      "no_targets": "At least one target is required.",
       "too_many_targets": "Maximum {max_targets} targets allowed. Remove some targets and try again.",
       "invalid_host": "One or more targets have an invalid or empty host field.",
       "invalid_host_format": "Invalid host format. Use an IP address, hostname, or full URL depending on probe method.",
