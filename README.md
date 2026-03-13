@@ -9,7 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/polprog-tech/WANPulse/actions/workflows/validate.yml"><img src="https://github.com/polprog-tech/WANPulse/actions/workflows/validate.yml/badge.svg" alt="HACS Validation"></a>
+  <a href="https://github.com/
+polprog-tech/WANPulse/actions/workflows/validate.yml"><img src="https://github.com/polprog-tech/WANPulse/actions/workflows/validate.yml/badge.svg" alt="HACS Validation"></a>
   <a href="https://github.com/polprog-tech/WANPulse/actions/workflows/ci.yml"><img src="https://github.com/polprog-tech/WANPulse/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/polprog-tech/WANPulse/releases"><img src="https://img.shields.io/github/v/release/polprog-tech/WANPulse?include_prereleases&label=version" alt="Version"></a>
   <a href="https://github.com/polprog-tech/WANPulse/blob/main/LICENSE"><img src="https://img.shields.io/github/license/polprog-tech/WANPulse" alt="License"></a>
@@ -80,12 +81,20 @@ Unlike your router's basic "connected" status, WANPulse detects **micro-outages*
 
 ## Screenshots
 
-<p align="center">
-  <img src="images/screenshots/1.jpg" alt="WANPulse Integration Overview" width="700">
-</p>
+### Dashboard Overview
+
+Full monitoring dashboard — latency history, packet loss, jitter, availability, connection details, and an "About" card explaining all sensors.
 
 <p align="center">
-  <img src="images/screenshots/2.jpg" alt="WANPulse Dashboard" width="700">
+  <img src="images/screenshots/dashboard-overview.jpg" alt="WANPulse — dashboard overview" width="800">
+</p>
+
+### Dashboard Cards
+
+Ready-made Lovelace cards — status tiles, uptime gauges, latency & jitter history, packet loss chart, and a manual probe button.
+
+<p align="center">
+  <img src="images/screenshots/dashboard-cards.jpg" alt="WANPulse — dashboard cards" width="600">
 </p>
 
 ---
@@ -824,7 +833,7 @@ WANPulse follows semantic versioning. See [CHANGELOG.md](CHANGELOG.md) for relea
 
 ## Author
 
-Created and maintained by **POLPROG** ([@polprog-tech](https://github.com/polprog-tech)).
+Created and maintained by **[POLPROG](https://polprog.pl/)** ([@polprog-tech](https://github.com/polprog-tech)).
 
 - **Report issues:** [GitHub Issues](https://github.com/polprog-tech/WANPulse/issues)
 - **Feature requests:** [GitHub Discussions](https://github.com/polprog-tech/WANPulse/discussions)

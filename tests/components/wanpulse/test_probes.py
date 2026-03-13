@@ -17,18 +17,36 @@ class TestGetProbeEngine:
     """Tests for probe engine factory."""
 
     def test_tcp_engine(self) -> None:
+        """GIVEN the probe method "tcp"."""
+
+        """WHEN requesting the probe engine."""
         engine = get_probe_engine("tcp")
+
+        """THEN a TCPProbeEngine is returned."""
         assert isinstance(engine, TCPProbeEngine)
 
     def test_http_engine(self) -> None:
+        """GIVEN the probe method "http"."""
+
+        """WHEN requesting the probe engine."""
         engine = get_probe_engine("http")
+
+        """THEN an HTTPProbeEngine is returned."""
         assert isinstance(engine, HTTPProbeEngine)
 
     def test_dns_engine(self) -> None:
+        """GIVEN the probe method "dns"."""
+
+        """WHEN requesting the probe engine."""
         engine = get_probe_engine("dns")
+
+        """THEN a DNSProbeEngine is returned."""
         assert isinstance(engine, DNSProbeEngine)
 
     def test_unknown_engine(self) -> None:
+        """GIVEN an unsupported probe method."""
+
+        """THEN a ValueError is raised."""
         with pytest.raises(ValueError, match="Unknown probe method"):
             get_probe_engine("icmp")
 
@@ -38,6 +56,7 @@ class TestTCPProbeEngine:
 
     @pytest.mark.asyncio
     async def test_successful_connect(self) -> None:
+        """GIVEN a TCP target on port 443 and a mocked successful connection."""
         target = ProbeTarget(host="1.1.1.1", label="Test", method=ProbeMethod.TCP, port=443)
         engine = TCPProbeEngine()
 
@@ -45,6 +64,7 @@ class TestTCPProbeEngine:
         mock_writer.close = MagicMock()
         mock_writer.wait_closed = AsyncMock()
 
+        """WHEN probing the target."""
         with (
             patch("asyncio.open_connection", return_value=Mock()),
             patch("asyncio.wait_for", new_callable=AsyncMock) as mock_wait,
@@ -52,40 +72,48 @@ class TestTCPProbeEngine:
             mock_wait.return_value = (MagicMock(), mock_writer)
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe succeeds with a non-negative latency."""
         assert result.success is True
         assert result.latency_ms is not None
         assert result.latency_ms >= 0
 
     @pytest.mark.asyncio
     async def test_timeout(self) -> None:
+        """GIVEN a TCP target on port 443 and a connection that times out."""
         target = ProbeTarget(host="1.1.1.1", label="Test", method=ProbeMethod.TCP, port=443)
         engine = TCPProbeEngine()
 
+        """WHEN probing the target."""
         with (
             patch("asyncio.open_connection", return_value=Mock()),
             patch("asyncio.wait_for", side_effect=TimeoutError),
         ):
             result = await engine.async_probe(target, timeout=1.0)
 
+        """THEN the probe fails with a timeout error."""
         assert result.success is False
         assert "timed out" in (result.error or "")
 
     @pytest.mark.asyncio
     async def test_connection_refused(self) -> None:
+        """GIVEN a TCP target on port 443 and a refused connection."""
         target = ProbeTarget(host="1.1.1.1", label="Test", method=ProbeMethod.TCP, port=443)
         engine = TCPProbeEngine()
 
+        """WHEN probing the target."""
         with (
             patch("asyncio.open_connection", return_value=Mock()),
             patch("asyncio.wait_for", side_effect=OSError("Connection refused")),
         ):
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe fails with a connection refused error."""
         assert result.success is False
         assert "Connection refused" in (result.error or "")
 
     @pytest.mark.asyncio
     async def test_default_port(self) -> None:
+        """GIVEN a TCP target with no explicit port."""
         target = ProbeTarget(host="1.1.1.1", label="Test", method=ProbeMethod.TCP)
         engine = TCPProbeEngine()
 
@@ -93,6 +121,7 @@ class TestTCPProbeEngine:
         mock_writer.close = MagicMock()
         mock_writer.wait_closed = AsyncMock()
 
+        """WHEN probing the target."""
         with (
             patch("asyncio.open_connection", return_value=Mock()),
             patch("asyncio.wait_for", new_callable=AsyncMock) as mock_wait,
@@ -100,6 +129,7 @@ class TestTCPProbeEngine:
             mock_wait.return_value = (MagicMock(), mock_writer)
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe succeeds using the default port."""
         assert result.success is True
 
 
@@ -108,6 +138,7 @@ class TestHTTPProbeEngine:
 
     @pytest.mark.asyncio
     async def test_successful_head(self) -> None:
+        """GIVEN an HTTP target and a mocked session returning status 200."""
         target = ProbeTarget(host="https://example.com", label="Test", method=ProbeMethod.HTTP)
         engine = HTTPProbeEngine()
 
@@ -121,14 +152,17 @@ class TestHTTPProbeEngine:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
+        """WHEN probing the target."""
         with patch("aiohttp.ClientSession", return_value=mock_session):
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe succeeds with a recorded latency."""
         assert result.success is True
         assert result.latency_ms is not None
 
     @pytest.mark.asyncio
     async def test_timeout(self) -> None:
+        """GIVEN an HTTP target and a session that times out."""
         target = ProbeTarget(host="https://example.com", label="Test", method=ProbeMethod.HTTP)
         engine = HTTPProbeEngine()
 
@@ -140,14 +174,17 @@ class TestHTTPProbeEngine:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
+        """WHEN probing the target."""
         with patch("aiohttp.ClientSession", return_value=mock_session):
             result = await engine.async_probe(target, timeout=1.0)
 
+        """THEN the probe fails with a timeout error."""
         assert result.success is False
         assert "timed out" in (result.error or "")
 
     @pytest.mark.asyncio
     async def test_url_construction_no_scheme(self) -> None:
+        """GIVEN an HTTP target without a URL scheme on port 443."""
         target = ProbeTarget(host="example.com", label="Test", method=ProbeMethod.HTTP, port=443)
         engine = HTTPProbeEngine()
 
@@ -161,9 +198,11 @@ class TestHTTPProbeEngine:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
+        """WHEN probing the target."""
         with patch("aiohttp.ClientSession", return_value=mock_session):
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe succeeds despite the missing scheme."""
         assert result.success is True
 
 
@@ -172,11 +211,14 @@ class TestDNSProbeEngine:
 
     @pytest.mark.asyncio
     async def test_successful_resolve(self) -> None:
+        """GIVEN a DNS target for www.google.com and a mocked successful resolution."""
         target = ProbeTarget(host="www.google.com", label="Test", method=ProbeMethod.DNS)
         engine = DNSProbeEngine()
 
         mock_loop = Mock()
         mock_loop.getaddrinfo = Mock(return_value=Mock())
+
+        """WHEN probing the target."""
         with (
             patch("asyncio.get_running_loop", return_value=mock_loop),
             patch("asyncio.wait_for", new_callable=AsyncMock) as mock_wait,
@@ -184,27 +226,33 @@ class TestDNSProbeEngine:
             mock_wait.return_value = [("family", "type", "proto", "canonname", ("addr", 80))]
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe succeeds with a recorded latency."""
         assert result.success is True
         assert result.latency_ms is not None
 
     @pytest.mark.asyncio
     async def test_timeout(self) -> None:
+        """GIVEN a DNS target and a lookup that times out."""
         target = ProbeTarget(host="nonexistent.invalid", label="Test", method=ProbeMethod.DNS)
         engine = DNSProbeEngine()
 
         mock_loop = Mock()
         mock_loop.getaddrinfo = Mock(return_value=Mock())
+
+        """WHEN probing the target."""
         with (
             patch("asyncio.get_running_loop", return_value=mock_loop),
             patch("asyncio.wait_for", side_effect=TimeoutError),
         ):
             result = await engine.async_probe(target, timeout=1.0)
 
+        """THEN the probe fails with a timeout error."""
         assert result.success is False
         assert "timed out" in (result.error or "")
 
     @pytest.mark.asyncio
     async def test_resolution_failure(self) -> None:
+        """GIVEN a DNS target for a nonexistent domain and a gaierror on resolution."""
         import socket
 
         target = ProbeTarget(host="nonexistent.invalid", label="Test", method=ProbeMethod.DNS)
@@ -212,6 +260,8 @@ class TestDNSProbeEngine:
 
         mock_loop = Mock()
         mock_loop.getaddrinfo = Mock(return_value=Mock())
+
+        """WHEN probing the target."""
         with (
             patch("asyncio.get_running_loop", return_value=mock_loop),
             patch(
@@ -221,5 +271,6 @@ class TestDNSProbeEngine:
         ):
             result = await engine.async_probe(target, timeout=5.0)
 
+        """THEN the probe fails with a resolution failure error."""
         assert result.success is False
         assert "failed" in (result.error or "")
