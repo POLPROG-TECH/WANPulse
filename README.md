@@ -1,6 +1,6 @@
-<p align="center">
+<div align="center">
   <img alt="WANPulse" src="images/logo.svg" width="200" height="200">
-</p>
+</div>
 
 <p align="center">
   <a href="https://github.com/polprog-tech/WANPulse/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/polprog-tech/WANPulse/validate.yml?branch=main&label=HACS&style=flat-square" alt="HACS Validation"></a>
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="#key-features">Features</a> .
+  <a href="#what-is-wanpulse">About</a> .
   <a href="#installation">Installation</a> .
   <a href="#configuration-guide">Configuration</a> .
   <a href="#entities-explained">Entities</a> .
@@ -33,6 +33,8 @@
 
 ---
 
+## What is WANPulse?
+
 **WANPulse** is a Home Assistant custom integration that answers a simple question: **"Is my internet actually working well right now?"**
 
 It works like a heartbeat monitor for your internet connection. Every 60 seconds (configurable), it sends test probes to servers you choose (default: Cloudflare 1.1.1.1 and Google 8.8.8.8), measures response times, detects failures, and calculates real-time statistics - all **100% locally** on your Home Assistant instance.
@@ -45,6 +47,44 @@ It works like a heartbeat monitor for your internet connection. Every 60 seconds
 - **How many outages happened?** - Count and total duration of detected drops
 
 Unlike your router's basic "connected" status, WANPulse detects **micro-outages** (brief drops your ISP won't tell you about) and gives you **historical data** to spot patterns.
+
+---
+
+## Screenshots
+
+### Dashboard Overview
+
+Full monitoring dashboard - latency history, packet loss, jitter, availability, connection details, and an "About" card explaining all sensors.
+
+<p align="center">
+  <img src="images/screenshots/dashboard-overview.jpg" alt="WANPulse - dashboard overview" width="800">
+</p>
+
+### Dashboard Cards
+
+Ready-made Lovelace cards - status tiles, uptime gauges, latency & jitter history, packet loss chart, and a manual probe button.
+
+<p align="center">
+  <img src="images/screenshots/dashboard-cards.jpg" alt="WANPulse - dashboard cards" width="600">
+</p>
+
+---
+
+## Key Features
+
+- **Multiple probe targets** - Monitor several endpoints simultaneously
+- **TCP / HTTP / DNS probe methods** - Choose the best method per target; TCP is the portable default
+- **Real-time metrics** - Average/min/max latency, jitter, packet loss
+- **Rolling availability** - 1-hour and 24-hour availability percentages
+- **Outage detection** - Tracks consecutive failures, outage count, and total outage duration
+- **Aggregate WAN health** - Single "WAN Status" binary sensor summarizing all targets
+- **Manual probe button** - Trigger an immediate probe cycle from the UI
+- **Fully async** - No blocking I/O; uses `asyncio` for all network operations
+- **Zero external dependencies** - Uses `asyncio` and `aiohttp` (bundled with HA)
+- **UI configuration** - Config flow, options flow, and reconfigure flow
+- **Diagnostics support** - Safe diagnostics with sensitive data redaction
+- **Repair issues** - Actionable repair issues for configuration problems
+- **Multi-language** - Full English and Polish translations; easy to add more
 
 ---
 
@@ -68,42 +108,6 @@ Unlike your router's basic "connected" status, WANPulse detects **micro-outages*
 - [Development](#development)
 - [Author](#author)
 - [License](#license)
-
----
-
-## Key Features
-
-- **Multiple probe targets** - Monitor several endpoints simultaneously
-- **TCP / HTTP / DNS probe methods** - Choose the best method per target; TCP is the portable default
-- **Real-time metrics** - Average/min/max latency, jitter, packet loss
-- **Rolling availability** - 1-hour and 24-hour availability percentages
-- **Outage detection** - Tracks consecutive failures, outage count, and total outage duration
-- **Aggregate WAN health** - Single "WAN Status" binary sensor summarizing all targets
-- **Manual probe button** - Trigger an immediate probe cycle from the UI
-- **Fully async** - No blocking I/O; uses `asyncio` for all network operations
-- **Zero external dependencies** - Uses `asyncio` and `aiohttp` (bundled with HA)
-- **UI configuration** - Config flow, options flow, and reconfigure flow
-- **Diagnostics support** - Safe diagnostics with sensitive data redaction
-- **Repair issues** - Actionable repair issues for configuration problems
-- **Multi-language** - Full English and Polish translations; easy to add more
-
-## Screenshots
-
-### Dashboard Overview
-
-Full monitoring dashboard - latency history, packet loss, jitter, availability, connection details, and an "About" card explaining all sensors.
-
-<p align="center">
-  <img src="images/screenshots/dashboard-overview.jpg" alt="WANPulse - dashboard overview" width="800">
-</p>
-
-### Dashboard Cards
-
-Ready-made Lovelace cards - status tiles, uptime gauges, latency & jitter history, packet loss chart, and a manual probe button.
-
-<p align="center">
-  <img src="images/screenshots/dashboard-cards.jpg" alt="WANPulse - dashboard cards" width="600">
-</p>
 
 ---
 
