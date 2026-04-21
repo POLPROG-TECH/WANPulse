@@ -1,39 +1,48 @@
-# WANPulse
-
 <p align="center">
-  <img src="custom_components/wanpulse/brand/icon.png" alt="WANPulse Logo" width="200" height="200">
+  <img alt="WANPulse" src="images/logo.svg" width="200" height="200">
 </p>
 
 <p align="center">
-  <strong>WAN/Internet Quality Monitor for Home Assistant</strong>
+  <a href="https://github.com/polprog-tech/WANPulse/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/polprog-tech/WANPulse/validate.yml?branch=main&label=HACS&style=flat-square" alt="HACS Validation"></a>
+  <a href="https://github.com/polprog-tech/WANPulse/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/polprog-tech/WANPulse/ci.yml?branch=main&style=flat-square" alt="CI"></a>
+  <a href="https://github.com/polprog-tech/WANPulse/releases"><img src="https://img.shields.io/github/v/release/polprog-tech/WANPulse?include_prereleases&label=version&style=flat-square&color=0A84FF" alt="Version"></a>
+  <a href="https://github.com/polprog-tech/WANPulse/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-6366f1?style=flat-square" alt="License: MIT"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-3776ab?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
+  <img src="https://img.shields.io/badge/Home%20Assistant-2024.1%2B-41BDF5?style=flat-square&logo=home-assistant&logoColor=white" alt="Home Assistant 2024.1+">
 </p>
 
 <p align="center">
-  <a href="https://github.com/
-polprog-tech/WANPulse/actions/workflows/validate.yml"><img src="https://github.com/polprog-tech/WANPulse/actions/workflows/validate.yml/badge.svg" alt="HACS Validation"></a>
-  <a href="https://github.com/polprog-tech/WANPulse/actions/workflows/ci.yml"><img src="https://github.com/polprog-tech/WANPulse/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/polprog-tech/WANPulse/releases"><img src="https://img.shields.io/github/v/release/polprog-tech/WANPulse?include_prereleases&label=version" alt="Version"></a>
-  <a href="https://github.com/polprog-tech/WANPulse/blob/main/LICENSE"><img src="https://img.shields.io/github/license/polprog-tech/WANPulse" alt="License"></a>
-  <a href="https://github.com/polprog-tech/WANPulse/stargazers"><img src="https://img.shields.io/github/stars/polprog-tech/WANPulse?style=flat" alt="Stars"></a>
+  <b>WAN/Internet quality monitor for Home Assistant.</b><br>
+  <sub>TCP / HTTP / DNS probes . Latency . Jitter . Packet loss . Outage tracking . 100% local</sub>
+</p>
+
+<p align="center">
+  <a href="#key-features">Features</a> .
+  <a href="#installation">Installation</a> .
+  <a href="#configuration-guide">Configuration</a> .
+  <a href="#entities-explained">Entities</a> .
+  <a href="#ready-made-dashboard">Dashboard</a> .
+  <a href="#troubleshooting">Troubleshooting</a> .
+  <a href="#development">Development</a> .
+  <a href="#license">License</a>
 </p>
 
 <p align="center">
   <a href="https://buymeacoffee.com/polprog"><img src="https://img.shields.io/badge/Support%20this%20project-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Support this project"></a>
-  <a href="https://github.com/sponsors/polprog-tech"><img src="https://img.shields.io/badge/GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white" alt="GitHub Sponsors"></a>
 </p>
 
 ---
 
 **WANPulse** is a Home Assistant custom integration that answers a simple question: **"Is my internet actually working well right now?"**
 
-It works like a heartbeat monitor for your internet connection. Every 60 seconds (configurable), it sends test probes to servers you choose (default: Cloudflare 1.1.1.1 and Google 8.8.8.8), measures response times, detects failures, and calculates real-time statistics — all **100% locally** on your Home Assistant instance.
+It works like a heartbeat monitor for your internet connection. Every 60 seconds (configurable), it sends test probes to servers you choose (default: Cloudflare 1.1.1.1 and Google 8.8.8.8), measures response times, detects failures, and calculates real-time statistics - all **100% locally** on your Home Assistant instance.
 
-- **Is my internet up or down?** — A simple binary sensor that's ON when your internet works
-- **How fast is my connection?** — Latency in milliseconds (lower = better)
-- **Am I losing packets?** — Packet loss percentage (0% = perfect)
-- **Is my connection stable?** — Jitter measures variation in response times
-- **What's my uptime?** — Availability percentages over 1 hour and 24 hours
-- **How many outages happened?** — Count and total duration of detected drops
+- **Is my internet up or down?** - A simple binary sensor that's ON when your internet works
+- **How fast is my connection?** - Latency in milliseconds (lower = better)
+- **Am I losing packets?** - Packet loss percentage (0% = perfect)
+- **Is my connection stable?** - Jitter measures variation in response times
+- **What's my uptime?** - Availability percentages over 1 hour and 24 hours
+- **How many outages happened?** - Count and total duration of detected drops
 
 Unlike your router's basic "connected" status, WANPulse detects **micro-outages** (brief drops your ISP won't tell you about) and gives you **historical data** to spot patterns.
 
@@ -58,43 +67,42 @@ Unlike your router's basic "connected" status, WANPulse detects **micro-outages*
 - [Privacy & Security](#privacy--security)
 - [Development](#development)
 - [Author](#author)
-- [Support the Project](#support-the-project)
 - [License](#license)
 
 ---
 
 ## Key Features
 
-- **Multiple probe targets** — Monitor several endpoints simultaneously
-- **TCP / HTTP / DNS probe methods** — Choose the best method per target; TCP is the portable default
-- **Real-time metrics** — Average/min/max latency, jitter, packet loss
-- **Rolling availability** — 1-hour and 24-hour availability percentages
-- **Outage detection** — Tracks consecutive failures, outage count, and total outage duration
-- **Aggregate WAN health** — Single "WAN Status" binary sensor summarizing all targets
-- **Manual probe button** — Trigger an immediate probe cycle from the UI
-- **Fully async** — No blocking I/O; uses `asyncio` for all network operations
-- **Zero external dependencies** — Uses `asyncio` and `aiohttp` (bundled with HA)
-- **UI configuration** — Config flow, options flow, and reconfigure flow
-- **Diagnostics support** — Safe diagnostics with sensitive data redaction
-- **Repair issues** — Actionable repair issues for configuration problems
-- **Multi-language** — Full English and Polish translations; easy to add more
+- **Multiple probe targets** - Monitor several endpoints simultaneously
+- **TCP / HTTP / DNS probe methods** - Choose the best method per target; TCP is the portable default
+- **Real-time metrics** - Average/min/max latency, jitter, packet loss
+- **Rolling availability** - 1-hour and 24-hour availability percentages
+- **Outage detection** - Tracks consecutive failures, outage count, and total outage duration
+- **Aggregate WAN health** - Single "WAN Status" binary sensor summarizing all targets
+- **Manual probe button** - Trigger an immediate probe cycle from the UI
+- **Fully async** - No blocking I/O; uses `asyncio` for all network operations
+- **Zero external dependencies** - Uses `asyncio` and `aiohttp` (bundled with HA)
+- **UI configuration** - Config flow, options flow, and reconfigure flow
+- **Diagnostics support** - Safe diagnostics with sensitive data redaction
+- **Repair issues** - Actionable repair issues for configuration problems
+- **Multi-language** - Full English and Polish translations; easy to add more
 
 ## Screenshots
 
 ### Dashboard Overview
 
-Full monitoring dashboard — latency history, packet loss, jitter, availability, connection details, and an "About" card explaining all sensors.
+Full monitoring dashboard - latency history, packet loss, jitter, availability, connection details, and an "About" card explaining all sensors.
 
 <p align="center">
-  <img src="images/screenshots/dashboard-overview.jpg" alt="WANPulse — dashboard overview" width="800">
+  <img src="images/screenshots/dashboard-overview.jpg" alt="WANPulse - dashboard overview" width="800">
 </p>
 
 ### Dashboard Cards
 
-Ready-made Lovelace cards — status tiles, uptime gauges, latency & jitter history, packet loss chart, and a manual probe button.
+Ready-made Lovelace cards - status tiles, uptime gauges, latency & jitter history, packet loss chart, and a manual probe button.
 
 <p align="center">
-  <img src="images/screenshots/dashboard-cards.jpg" alt="WANPulse — dashboard cards" width="600">
+  <img src="images/screenshots/dashboard-cards.jpg" alt="WANPulse - dashboard cards" width="600">
 </p>
 
 ---
@@ -155,9 +163,9 @@ host, label, method
 ```
 
 Where:
-- **host** — the IP address, hostname, or URL to probe
-- **label** — a friendly name (shown in Home Assistant)
-- **method** — `tcp` (recommended), `http`, or `dns`
+- **host** - the IP address, hostname, or URL to probe
+- **label** - a friendly name (shown in Home Assistant)
+- **method** - `tcp` (recommended), `http`, or `dns`
 
 **Default targets (good for most users):**
 ```
@@ -175,7 +183,7 @@ www.google.com, Google DNS, dns       # DNS resolution test
 208.67.222.222, OpenDNS, tcp          # TCP probe to OpenDNS
 ```
 
-> **Tip:** Start with the defaults. They're reliable, globally available, and cover the most common use case — checking if your internet works.
+> **Tip:** Start with the defaults. They're reliable, globally available, and cover the most common use case - checking if your internet works.
 
 ### Step 3: Set Scan Interval
 
@@ -222,16 +230,16 @@ WANPulse creates a single device called **WANPulse** with the following entities
 | **Internet packet loss** | Sensor | % | Percentage of probes that failed. 0% = perfect, >5% = connection issues |
 | **Internet jitter** | Sensor | ms | Variation in latency between consecutive probes. Low = stable, high = unstable connection |
 | **Availability last hour** | Sensor | % | What percentage of the last hour your internet was up. 100% = perfect |
-| **Availability last 24 hours** | Sensor | % | Same but over 24 hours — shows long-term reliability |
+| **Availability last 24 hours** | Sensor | % | Same but over 24 hours - shows long-term reliability |
 | **Outages last 24 hours** | Sensor | count | Number of detected outage events in the last 24 hours |
 
-### Advanced Metrics (disabled by default — enable in entity settings)
+### Advanced Metrics (disabled by default - enable in entity settings)
 
 | Entity | Type | Unit | What it shows |
 |--------|------|------|---------------|
 | **Internet min latency** | Sensor | ms | Fastest response observed in current window |
-| **Internet max latency** | Sensor | ms | Slowest response — spikes here indicate congestion |
-| **Consecutive probe failures** | Sensor | count | Current failure streak. Diagnostic — helps debug false outages |
+| **Internet max latency** | Sensor | ms | Slowest response - spikes here indicate congestion |
+| **Consecutive probe failures** | Sensor | count | Current failure streak. Diagnostic - helps debug false outages |
 | **Total outage time (24h)** | Sensor | min | Total minutes your internet was down in the last 24 hours |
 
 ### Per-Target Metrics (disabled by default)
@@ -244,13 +252,13 @@ To enable per-target sensors: **Settings** > **Devices & Services** > **WANPulse
 
 | Entity | What it does |
 |--------|--------------|
-| **Test connection now** | Immediately runs a probe cycle instead of waiting for the next scheduled check. Useful when troubleshooting — press this after rebooting your router or changing network settings to get instant results. |
+| **Test connection now** | Immediately runs a probe cycle instead of waiting for the next scheduled check. Useful when troubleshooting - press this after rebooting your router or changing network settings to get instant results. |
 
 ---
 
 ## Ready-Made Dashboard
 
-WANPulse comes with ready-to-use cards — you can set up a full dashboard or add individual cards to any existing dashboard.
+WANPulse comes with ready-to-use cards - you can set up a full dashboard or add individual cards to any existing dashboard.
 
 ### How to add a card (3 steps)
 
@@ -266,7 +274,7 @@ That's it! The card appears on your dashboard immediately.
 
 ### 🟢 Option A: All-in-One Card
 
-One card with everything — status tiles, gauges, charts, and test button. Perfect for adding to your main dashboard.
+One card with everything - status tiles, gauges, charts, and test button. Perfect for adding to your main dashboard.
 
 Paste the contents of [`docs/cards/all-in-one.yaml`](docs/cards/all-in-one.yaml):
 
@@ -330,7 +338,7 @@ cards:
         name: "Outages (24h)"
         icon: mdi:alert-circle-outline
   - type: history-graph
-    title: "📊 Latency & Jitter — 24h"
+    title: "📊 Latency & Jitter - 24h"
     hours_to_show: 24
     entities:
       - entity: sensor.wanpulse_average_latency
@@ -338,7 +346,7 @@ cards:
       - entity: sensor.wanpulse_jitter
         name: Jitter
   - type: history-graph
-    title: "📉 Packet Loss — 24h"
+    title: "📉 Packet Loss - 24h"
     hours_to_show: 24
     entities:
       - entity: sensor.wanpulse_packet_loss
@@ -484,7 +492,7 @@ automation:
 
 1. Open HACS in Home Assistant
 2. Go to **Integrations** tab
-3. Find WANPulse — if an update is available, click **Update**
+3. Find WANPulse - if an update is available, click **Update**
 4. Restart Home Assistant
 
 ### Manual Upgrade
@@ -498,7 +506,7 @@ automation:
 
 | From | To | Notes |
 |------|----|-------|
-| 1.0.x (old entity IDs) | 1.1.x+ | Entity IDs changed — see migration note below |
+| 1.0.x (old entity IDs) | 1.1.x+ | Entity IDs changed - see migration note below |
 | 1.1.x | 1.x.x | No migration needed. Config entries are compatible. |
 
 WANPulse uses config entry versioning. When a new version requires data migration, it happens automatically on startup. Your targets and settings are preserved.
@@ -531,7 +539,7 @@ Starting from version 1.1.0, WANPulse uses **stable, language-independent entity
 
 ### What to expect after upgrading
 
-- **Rolling window statistics** (current latency, availability) are **reset** on restart — they rebuild as new probes run
+- **Rolling window statistics** (current latency, availability) are **reset** on restart - they rebuild as new probes run
 - **Historical data** in Home Assistant's recorder (graphs) is **preserved**
 - **Entity IDs** are stable and language-independent from version 1.1.0+
 - If new entities are added in an update, they appear as **disabled by default** to avoid clutter
@@ -551,7 +559,7 @@ If you need to downgrade, simply replace the integration files with the older ve
 | All targets showing offline | Check your internet connection; verify targets are reachable from your HA host. Try `ping 1.1.1.1` from the HA terminal |
 | High packet loss reported | Increase timeout (Configure > Timeout); if your connection is slow, probes may time out |
 | Entities not updating | Check scan interval; press "Test connection now" button for immediate results |
-| Entity values are `unknown` after restart | This is normal — rolling window stats rebuild after the first probe cycle completes |
+| Entity values are `unknown` after restart | This is normal - rolling window stats rebuild after the first probe cycle completes |
 | Integration not appearing in search | Ensure `custom_components/wanpulse/` exists and has all files; check HA logs for import errors |
 
 ### Checking Logs
@@ -597,13 +605,13 @@ find /config/custom_components/wanpulse -type d -name __pycache__ -exec rm -rf {
 </details>
 
 <details>
-<summary><strong>Dashboard cards show "Entity not found" — why?</strong></summary>
+<summary><strong>Dashboard cards show "Entity not found" - why?</strong></summary>
 
 This happens when entity IDs in the card YAML don't match your actual entity IDs. Common causes:
 
-1. **Upgraded from an older version** — Entity IDs were previously generated from translated entity names (which changed between versions). Since version 1.1.0, entity IDs use stable internal keys.
+1. **Upgraded from an older version** - Entity IDs were previously generated from translated entity names (which changed between versions). Since version 1.1.0, entity IDs use stable internal keys.
 
-2. **Home Assistant is set to a non-English language** — Older versions generated entity IDs from the translated name, so Polish HA would create IDs like `sensor.wanpulse_opoznienie_internetu` instead of `sensor.wanpulse_average_latency`.
+2. **Home Assistant is set to a non-English language** - Older versions generated entity IDs from the translated name, so Polish HA would create IDs like `sensor.wanpulse_opoznienie_internetu` instead of `sensor.wanpulse_average_latency`.
 
 **Fix:** Delete and re-add the integration:
 1. **Settings** > **Devices & Services** > **WANPulse** > ⋮ > **Delete**
@@ -620,9 +628,9 @@ After re-adding, your entity IDs will match the dashboard YAML. Your recorder hi
 
 WANPulse stores data in two places:
 
-1. **In-memory rolling statistics** (latency, availability, outage counters) — these reset automatically on every HA restart.
+1. **In-memory rolling statistics** (latency, availability, outage counters) - these reset automatically on every HA restart.
 
-2. **Home Assistant recorder** (long-term history and graphs) — to clear this:
+2. **Home Assistant recorder** (long-term history and graphs) - to clear this:
    1. Go to **Developer Tools** > **Statistics**
    2. Search for entities starting with `sensor.wanpulse_` or `binary_sensor.wanpulse_`
    3. Delete the statistics for the entities you want to reset
@@ -637,7 +645,7 @@ To completely start over:
 <details>
 <summary><strong>Why do my graphs/statistics disappear after restarting HA?</strong></summary>
 
-**Short answer:** The real-time gauges (current latency, current availability, jitter) reset because they are calculated from an in-memory rolling window. This is by design — keeping hours of measurement data in memory is lightweight and fast.
+**Short answer:** The real-time gauges (current latency, current availability, jitter) reset because they are calculated from an in-memory rolling window. This is by design - keeping hours of measurement data in memory is lightweight and fast.
 
 **Your history charts are preserved.** The Home Assistant recorder saves every entity state change to a database. So the 24-hour or 7-day history graphs on your dashboard still have all historical data. Only the "current" real-time values need a few probe cycles to recalculate.
 
@@ -649,9 +657,9 @@ Typically within 2–3 minutes after restart, all values are populated again.
 
 ICMP raw sockets require elevated privileges (`CAP_NET_RAW`) that are **not available** in most Home Assistant installations (HA OS, Container). Instead of failing silently or requiring complex workarounds, WANPulse uses:
 
-- **TCP connect** (default) — connects to port 443, works everywhere, similar reliability to ping
-- **HTTP HEAD** — sends an HTTP request, can verify application-level connectivity
-- **DNS resolution** — resolves a hostname, tests DNS infrastructure
+- **TCP connect** (default) - connects to port 443, works everywhere, similar reliability to ping
+- **HTTP HEAD** - sends an HTTP request, can verify application-level connectivity
+- **DNS resolution** - resolves a hostname, tests DNS infrastructure
 
 TCP connect on port 443 is the best general-purpose substitute for ping and works on all HA installation types without privileges.
 </details>
@@ -691,7 +699,7 @@ Very little. With default settings (60-second interval, 3 probes per cycle, 2 ta
 - **HTTP HEAD probe:** ~500 bytes per probe × 3 × 2 = ~3 KB/min
 - **DNS probe:** ~100 bytes per probe × 3 × 2 = ~600 bytes/min
 
-That's roughly **1–4 KB per minute**, or **1.5–6 MB per day** — negligible on any connection.
+That's roughly **1–4 KB per minute**, or **1.5–6 MB per day** - negligible on any connection.
 </details>
 
 <details>
@@ -725,8 +733,8 @@ The results are reflected in all sensors immediately, just like a scheduled prob
 
 WANPulse entities update every probe cycle (default: 60 seconds). If you're concerned about database size:
 
-1. **Increase scan interval** — Settings > Devices & Services > WANPulse > Configure > set to 120 or 300 seconds
-2. **Exclude entities from recorder** — Add to `configuration.yaml`:
+1. **Increase scan interval** - Settings > Devices & Services > WANPulse > Configure > set to 120 or 300 seconds
+2. **Exclude entities from recorder** - Add to `configuration.yaml`:
 
 ```yaml
 recorder:
@@ -735,14 +743,14 @@ recorder:
       - sensor.wanpulse_*_target_*   # Exclude per-target entities
 ```
 
-3. **Keep aggregate entities** — The main sensors (internet connection, latency, availability) are the most useful for long-term history
-4. **Set recorder purge** — HA automatically purges old data (default: 10 days). Adjust with `purge_keep_days` if needed.
+3. **Keep aggregate entities** - The main sensors (internet connection, latency, availability) are the most useful for long-term history
+4. **Set recorder purge** - HA automatically purges old data (default: 10 days). Adjust with `purge_keep_days` if needed.
 </details>
 
 <details>
 <summary><strong>Can I use WANPulse with Home Assistant Energy Dashboard?</strong></summary>
 
-No, WANPulse monitors network quality, not energy consumption. However, you can use WANPulse data in **automations** — for example, to pause large downloads or uploads when internet quality degrades.
+No, WANPulse monitors network quality, not energy consumption. However, you can use WANPulse data in **automations** - for example, to pause large downloads or uploads when internet quality degrades.
 </details>
 
 <details>
@@ -750,10 +758,10 @@ No, WANPulse monitors network quality, not energy consumption. However, you can 
 
 Common reasons:
 
-- **Probe timeout too low** — If your default timeout is 5 seconds but some probes take 6 seconds, they count as failed. Try increasing the timeout.
-- **Target server was briefly unavailable** — Even reliable servers like 1.1.1.1 can have momentary blips. Using multiple targets smooths this out.
-- **Wi-Fi interference** — If HA connects via Wi-Fi, local wireless issues can cause probe failures that aren't truly WAN problems.
-- **After a restart** — Availability recalculates from scratch. Give it an hour to stabilize.
+- **Probe timeout too low** - If your default timeout is 5 seconds but some probes take 6 seconds, they count as failed. Try increasing the timeout.
+- **Target server was briefly unavailable** - Even reliable servers like 1.1.1.1 can have momentary blips. Using multiple targets smooths this out.
+- **Wi-Fi interference** - If HA connects via Wi-Fi, local wireless issues can cause probe failures that aren't truly WAN problems.
+- **After a restart** - Availability recalculates from scratch. Give it an hour to stabilize.
 </details>
 
 <details>
@@ -773,20 +781,20 @@ If installed via HACS, use HACS to remove it instead of manually deleting files.
 
 ## Limitations & Known Tradeoffs
 
-- **Rolling window data is in-memory** — Statistics reset on HA restart. Historical data is preserved in the HA recorder for graphing.
-- **System DNS resolver** — DNS probe uses the system resolver, not a specific DNS server.
-- **No ICMP support** — By design, for portability. Use TCP probe as an equivalent.
-- **Single config entry** — Only one WANPulse instance per HA installation.
-- **Max 10 targets** — To prevent resource abuse.
+- **Rolling window data is in-memory** - Statistics reset on HA restart. Historical data is preserved in the HA recorder for graphing.
+- **System DNS resolver** - DNS probe uses the system resolver, not a specific DNS server.
+- **No ICMP support** - By design, for portability. Use TCP probe as an equivalent.
+- **Single config entry** - Only one WANPulse instance per HA installation.
+- **Max 10 targets** - To prevent resource abuse.
 
 ---
 
 ## Privacy & Security
 
-- **All processing is local** — No data is sent to external services beyond the configured probe targets.
-- **Network activity** — WANPulse only connects to the targets you configure (TCP handshake, HTTP HEAD, or DNS resolution).
-- **Diagnostics** — Target hosts and labels are redacted in diagnostic downloads.
-- **No telemetry** — WANPulse does not collect or transmit usage data.
+- **All processing is local** - No data is sent to external services beyond the configured probe targets.
+- **Network activity** - WANPulse only connects to the targets you configure (TCP handshake, HTTP HEAD, or DNS resolution).
+- **Diagnostics** - Target hosts and labels are redacted in diagnostic downloads.
+- **No telemetry** - WANPulse does not collect or transmit usage data.
 
 ---
 
@@ -825,11 +833,9 @@ mypy custom_components/wanpulse --ignore-missing-imports
 
 ---
 
-## Release Notes Policy
+## Release Notes
 
-WANPulse follows semantic versioning. See [CHANGELOG.md](CHANGELOG.md) for release history.
-
----
+See [CHANGELOG.md](CHANGELOG.md) for release history. WANPulse follows [Semantic Versioning](https://semver.org/).
 
 ## Author
 
@@ -839,21 +845,15 @@ Created and maintained by **[POLPROG](https://polprog.pl/)** ([@polprog-tech](ht
 - **Feature requests:** [GitHub Discussions](https://github.com/polprog-tech/WANPulse/discussions)
 - **Documentation:** [docs/architecture.md](docs/architecture.md)
 
-## Support the Project
-
-If WANPulse is useful to you, consider supporting its development:
-
-[![Support this project](https://img.shields.io/badge/Support%20this%20project-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/polprog)
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/polprog-tech)
-
-You can also support by:
-- Starring this repository
-- Sharing WANPulse with others
-- Reporting bugs and contributing fixes
-- Contributing new features or documentation
-
 ---
+
+## Contributing & Community
+
+- [Contributing Guide](CONTRIBUTING.md) - development setup, code style, PR guidance
+- [Code of Conduct](CODE_OF_CONDUCT.md) - expected behavior for contributors and maintainers
+- [Security Policy](SECURITY.md) - how to privately report security vulnerabilities
+- [Changelog](CHANGELOG.md) - release history and notable changes
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+This project is licensed under the [MIT License](LICENSE).

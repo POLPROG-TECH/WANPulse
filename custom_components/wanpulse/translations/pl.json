@@ -2,8 +2,8 @@
   "config": {
     "step": {
       "user": {
-        "title": "Konfiguracja WANPulse — Monitor Internetu",
-        "description": "WANPulse monitoruje połączenie internetowe, okresowo sprawdzając zewnętrzne serwery. Mierzy opóźnienia, utratę pakietów, jitter i wykrywa awarie.\n\n**Cele sondowania** — wpisz jeden cel na linię w formacie:\nhost, etykieta, metoda\n\n- **host** — adres IP lub nazwa hosta\n- **etykieta** — przyjazna nazwa wyświetlana w Home Assistant\n- **metoda** — typ sondy: tcp (domyślna, zalecana), http lub dns\n\n**Przykłady:**\n- {example_tcp}\n- {example_http}\n- {example_dns}",
+        "title": "Konfiguracja WANPulse - Monitor Internetu",
+        "description": "WANPulse monitoruje połączenie internetowe, okresowo sprawdzając zewnętrzne serwery. Mierzy opóźnienia, utratę pakietów, jitter i wykrywa awarie.\n\n**Cele sondowania** - wpisz jeden cel na linię w formacie:\nhost, etykieta, metoda\n\n- **host** - adres IP lub nazwa hosta\n- **etykieta** - przyjazna nazwa wyświetlana w Home Assistant\n- **metoda** - typ sondy: tcp (domyślna, zalecana), http lub dns\n\n**Przykłady:**\n- {example_tcp}\n- {example_http}\n- {example_dns}",
         "data": {
           "targets": "Cele sondowania",
           "scan_interval": "Interwał skanowania (sekundy)"
@@ -15,7 +15,7 @@
       },
       "reconfigure": {
         "title": "Zmiana celów WANPulse",
-        "description": "Edytuj cele sondowania. Jeden cel na linię: host, etykieta, metoda\n\n- **TCP** (zalecana) — działa z każdym IP lub hostem, testuje połączenie na port 443\n- **HTTP** — podaj pełny URL, testuje odpowiedź HTTP HEAD\n- **DNS** — podaj nazwę hosta, testuje czas rozwiązywania DNS",
+        "description": "Edytuj cele sondowania. Jeden cel na linię: host, etykieta, metoda\n\n- **TCP** (zalecana) - działa z każdym IP lub hostem, testuje połączenie na port 443\n- **HTTP** - podaj pełny URL, testuje odpowiedź HTTP HEAD\n- **DNS** - podaj nazwę hosta, testuje czas rozwiązywania DNS",
         "data": {
           "targets": "Cele sondowania"
         },
@@ -41,7 +41,7 @@
   "options": {
     "step": {
       "init": {
-        "title": "WANPulse — Ustawienia monitorowania",
+        "title": "WANPulse - Ustawienia monitorowania",
         "description": "Dostosuj sposób monitorowania połączenia internetowego. Domyślne wartości sprawdzają się u większości użytkowników.",
         "data": {
           "scan_interval": "Interwał skanowania (sekundy)",
@@ -74,7 +74,7 @@
         "name": "Połączenie internetowe"
       },
       "target_status": {
-        "name": "{target} — dostępność"
+        "name": "{target} - dostępność"
       }
     },
     "sensor": {
@@ -109,16 +109,16 @@
         "name": "Łączny czas awarii (24h)"
       },
       "target_latency": {
-        "name": "{target} — opóźnienie"
+        "name": "{target} - opóźnienie"
       },
       "target_packet_loss": {
-        "name": "{target} — utrata pakietów"
+        "name": "{target} - utrata pakietów"
       },
       "target_jitter": {
-        "name": "{target} — jitter"
+        "name": "{target} - jitter"
       },
       "target_availability_1h": {
-        "name": "{target} — dostępność (1h)"
+        "name": "{target} - dostępność (1h)"
       }
     },
     "button": {

@@ -51,6 +51,14 @@ ruff check --fix .
 ruff format .
 ```
 
+### Pre-commit hook
+
+Install the bundled hook to run lint, format, and tests before every commit:
+
+```bash
+cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
 ## Project Structure
 
 ```
@@ -109,19 +117,19 @@ class YourProbeEngine(ProbeEngine):
 
 ### Key Principles
 
-- **Async-first** — never block the event loop
-- **Typed** — all functions must have type annotations
-- **Keep entities thin** — they project backend state, don't contain business logic
-- **Use `translation_key`** for all entity names — no hardcoded English in entities
+- **Async-first** - never block the event loop
+- **Typed** - all functions must have type annotations
+- **Keep entities thin** - they project backend state, don't contain business logic
+- **Use `translation_key`** for all entity names - no hardcoded English in entities
 - **Use appropriate `device_class`, `state_class`, and `native_unit_of_measurement`**
-- **No print statements** — use `logging.getLogger(__name__)` instead
-- **Docstrings** — Google-style docstrings for all public classes and functions
-- **Test everything** — aim for high coverage on core logic
+- **No print statements** - use `logging.getLogger(__name__)` instead
+- **Docstrings** - Google-style docstrings for all public classes and functions
+- **Test everything** - aim for high coverage on core logic
 - **Probes must not require elevated privileges** (no raw sockets) and should work on all HA installation types
 
 ## Branching & PR Guidance
 
-- **main** — stable release branch
+- **main** - stable release branch
 - Feature branches: `feature/description`
 - Bug fixes: `fix/description`
 - PRs should include tests and pass all CI checks
@@ -147,32 +155,32 @@ WANPulse uses **scenario-oriented Given/When/Then (GWT) style tests** for readab
 
 Every test follows a clear three-part structure:
 
-1. **Given** — Set up preconditions (create targets, configure mocks)
-2. **When** — Perform the action under test (run a probe, call a service, submit a flow)
-3. **Then** — Assert the expected outcome (check return values, verify state changes)
+1. **Given** - Set up preconditions (create targets, configure mocks)
+2. **When** - Perform the action under test (run a probe, call a service, submit a flow)
+3. **Then** - Assert the expected outcome (check return values, verify state changes)
 
 ### In Practice
 
 - Test classes are organized by **feature/scenario**, not by module. For example, `TestTCPProbeEngine` rather than `TestProbes`.
 - Test method names describe the scenario: `test_successful_connect`, `test_timeout_returns_failure`.
-- Each test uses `GIVEN`, `WHEN`, `THEN` markers in docstrings or inline comments to mark sections.
+- Each test uses `GIVEN`, `WHEN`, `THEN` docstrings - a class-level GIVEN above the `def` (or decorator), plus WHEN and THEN docstrings inside the method body.
 - We include **happy-path**, **edge-case**, and **failure-path** scenarios for every feature.
 
 ### Example
 
 ```python
 class TestTCPProbeOnTimeout:
-    """Given a TCP target that does not respond in time."""
+    """Tests for TCP probe behavior on timeout."""
 
+    """GIVEN a TCP target that does not respond in time"""
     @pytest.mark.asyncio
     async def test_returns_failure_with_error(self):
-        # Given — a target and a mocked timeout
         target = ProbeTarget(host="10.0.0.1", label="Slow", method=ProbeMethod.TCP, port=443)
 
-        # When — the probe is executed
+        """WHEN the probe is executed"""
         result = await engine.async_probe(target, timeout=0.001)
 
-        # Then — the result indicates failure
+        """THEN the result indicates failure"""
         assert result.success is False
         assert result.error is not None
 ```
@@ -195,3 +203,7 @@ class TestTCPProbeOnTimeout:
 - [ ] No blocking I/O on the event loop
 - [ ] Docstrings present for public API
 - [ ] CHANGELOG.md updated
+
+## License
+
+See [LICENSE](LICENSE).

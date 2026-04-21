@@ -1,4 +1,4 @@
-# WANPulse — Availability Gauges Card
+# WANPulse - Availability Gauges Card
 #
 # Two needle gauges showing uptime percentage.
 # Green (>99%) = excellent, Yellow (>95%) = acceptable, Red (<95%) = problems.

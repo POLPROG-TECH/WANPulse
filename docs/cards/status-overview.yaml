@@ -1,4 +1,4 @@
-# WANPulse — Status Overview Card
+# WANPulse - Status Overview Card
 #
 # A compact row of tile cards showing the key health indicators.
 # Color-coded: green = healthy, red/orange = issue detected.

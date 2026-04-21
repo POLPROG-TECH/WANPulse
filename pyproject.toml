@@ -21,6 +21,9 @@ filterwarnings = [
 target-version = "py312"
 line-length = 100
 
+[tool.ruff.format]
+exclude = ["tests/**/*.py"]
+
 [tool.ruff.lint]
 select = [
     "A",      # flake8-builtins

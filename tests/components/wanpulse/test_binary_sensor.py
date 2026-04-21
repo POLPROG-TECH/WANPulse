@@ -36,128 +36,132 @@ def _make_snapshot(wan_online: bool = True, target_online: bool = True) -> Coord
 class TestAggregateBinarySensor:
     """Tests for aggregate binary sensors."""
 
+    """GIVEN a snapshot where WAN is online"""
     def test_wan_status_online(self) -> None:
-        """GIVEN a snapshot where WAN is online."""
         snapshot = _make_snapshot(wan_online=True)
         desc = AGGREGATE_BINARY_SENSORS[0]
+        """WHEN wan status online is evaluated"""
 
-        """THEN the value function returns True."""
+        """THEN the value function returns True"""
         assert desc.value_fn(snapshot) is True
 
+    """GIVEN a snapshot where WAN is offline"""
     def test_wan_status_offline(self) -> None:
-        """GIVEN a snapshot where WAN is offline."""
         snapshot = _make_snapshot(wan_online=False)
         desc = AGGREGATE_BINARY_SENSORS[0]
+        """WHEN wan status offline is evaluated"""
 
-        """THEN the value function returns False."""
+        """THEN the value function returns False"""
         assert desc.value_fn(snapshot) is False
 
+    """GIVEN a coordinator with snapshot data and the first aggregate descriptor"""
     def test_entity_unique_id(self) -> None:
-        """GIVEN a coordinator with snapshot data and the first aggregate descriptor."""
         coordinator = MagicMock()
         coordinator.data = _make_snapshot()
         desc = AGGREGATE_BINARY_SENSORS[0]
 
-        """WHEN the aggregate binary sensor is created."""
+        """WHEN the aggregate binary sensor is created"""
         sensor = WANPulseAggregateBinarySensor(coordinator, "test_entry", desc)
 
-        """THEN its unique_id combines the entry id and sensor key."""
+        """THEN its unique_id combines the entry id and sensor key"""
         assert sensor.unique_id == "test_entry_wan_status"
 
+    """GIVEN a coordinator with snapshot data and the first aggregate descriptor"""
     def test_suggested_object_id(self) -> None:
-        """GIVEN a coordinator with snapshot data and the first aggregate descriptor."""
         coordinator = MagicMock()
         coordinator.data = _make_snapshot()
         desc = AGGREGATE_BINARY_SENSORS[0]
 
-        """WHEN the aggregate binary sensor is created."""
+        """WHEN the aggregate binary sensor is created"""
         sensor = WANPulseAggregateBinarySensor(coordinator, "test_entry", desc)
 
-        """THEN its suggested_object_id matches the sensor key."""
+        """THEN its suggested_object_id matches the sensor key"""
         assert sensor.suggested_object_id == "wan_status"
 
+    """GIVEN a coordinator with no snapshot data"""
     def test_value_none_when_no_data(self) -> None:
-        """GIVEN a coordinator with no snapshot data."""
         coordinator = MagicMock()
         coordinator.data = None
         desc = AGGREGATE_BINARY_SENSORS[0]
 
-        """WHEN the aggregate binary sensor is created."""
+        """WHEN the aggregate binary sensor is created"""
         sensor = WANPulseAggregateBinarySensor(coordinator, "test_entry", desc)
 
-        """THEN is_on returns None."""
+        """THEN is_on returns None"""
         assert sensor.is_on is None
 
 
 class TestTargetBinarySensor:
     """Tests for per-target binary sensors."""
 
+    """GIVEN a target snapshot where the target is online"""
     def test_target_online(self) -> None:
-        """GIVEN a target snapshot where the target is online."""
         target = ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)
         snap = TargetSnapshot(target=target, is_online=True)
         desc = TARGET_BINARY_SENSORS[0]
+        """WHEN target online is evaluated"""
 
-        """THEN the value function returns True."""
+        """THEN the value function returns True"""
         assert desc.value_fn(snap) is True
 
+    """GIVEN a target snapshot where the target is offline"""
     def test_target_offline(self) -> None:
-        """GIVEN a target snapshot where the target is offline."""
         target = ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)
         snap = TargetSnapshot(target=target, is_online=False)
         desc = TARGET_BINARY_SENSORS[0]
+        """WHEN target offline is evaluated"""
 
-        """THEN the value function returns False."""
+        """THEN the value function returns False"""
         assert desc.value_fn(snap) is False
 
+    """GIVEN a coordinator with snapshot data and the first target descriptor"""
     def test_entity_unique_id(self) -> None:
-        """GIVEN a coordinator with snapshot data and the first target descriptor."""
         coordinator = MagicMock()
         coordinator.data = _make_snapshot()
         desc = TARGET_BINARY_SENSORS[0]
 
-        """WHEN the target binary sensor is created."""
+        """WHEN the target binary sensor is created"""
         sensor = WANPulseTargetBinarySensor(coordinator, "test_entry", "tcp_1_1_1_1", "CF", desc)
 
-        """THEN its unique_id combines the entry id, target slug, and sensor key."""
+        """THEN its unique_id combines the entry id, target slug, and sensor key"""
         assert sensor.unique_id == "test_entry_tcp_1_1_1_1_target_status"
 
+    """GIVEN a coordinator with snapshot data and the first target descriptor"""
     def test_suggested_object_id(self) -> None:
-        """GIVEN a coordinator with snapshot data and the first target descriptor."""
         coordinator = MagicMock()
         coordinator.data = _make_snapshot()
         desc = TARGET_BINARY_SENSORS[0]
 
-        """WHEN the target binary sensor is created with a human-readable label."""
+        """WHEN the target binary sensor is created with a human-readable label"""
         sensor = WANPulseTargetBinarySensor(
             coordinator, "test_entry", "tcp_1_1_1_1", "Cloudflare DNS", desc
         )
 
-        """THEN its suggested_object_id is derived from the label and sensor key."""
+        """THEN its suggested_object_id is derived from the label and sensor key"""
         assert sensor.suggested_object_id == "cloudflare_dns_target_status"
 
+    """GIVEN a coordinator with snapshot data but a nonexistent target slug"""
     def test_value_none_when_target_missing(self) -> None:
-        """GIVEN a coordinator with snapshot data but a nonexistent target slug."""
         coordinator = MagicMock()
         coordinator.data = _make_snapshot()
         desc = TARGET_BINARY_SENSORS[0]
 
-        """WHEN the target binary sensor references a missing target."""
+        """WHEN the target binary sensor references a missing target"""
         sensor = WANPulseTargetBinarySensor(coordinator, "test_entry", "nonexistent", "X", desc)
 
-        """THEN is_on returns None."""
+        """THEN is_on returns None"""
         assert sensor.is_on is None
 
+    """GIVEN a coordinator with snapshot data and the first target descriptor"""
     def test_translation_placeholders(self) -> None:
-        """GIVEN a coordinator with snapshot data and the first target descriptor."""
         coordinator = MagicMock()
         coordinator.data = _make_snapshot()
         desc = TARGET_BINARY_SENSORS[0]
 
-        """WHEN the target binary sensor is created with a label."""
+        """WHEN the target binary sensor is created with a label"""
         sensor = WANPulseTargetBinarySensor(
             coordinator, "test_entry", "tcp_1_1_1_1", "Cloudflare DNS", desc
         )
 
-        """THEN translation_placeholders includes the target label."""
+        """THEN translation_placeholders includes the target label"""
         assert sensor.translation_placeholders == {"target": "Cloudflare DNS"}

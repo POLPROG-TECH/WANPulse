@@ -55,9 +55,9 @@ def _make_snapshot() -> CoordinatorSnapshot:
 class TestDiagnostics:
     """Tests for diagnostics output."""
 
+    """GIVEN a config entry with a target containing host, label, and method"""
     @pytest.mark.asyncio
     async def test_diagnostics_redacts_hosts(self) -> None:
-        """GIVEN a config entry with a target containing host, label, and method."""
         hass = MagicMock()
         entry = MagicMock()
         entry.data = {
@@ -72,19 +72,19 @@ class TestDiagnostics:
         entry.runtime_data = MagicMock()
         entry.runtime_data.coordinator = coordinator
 
-        """WHEN diagnostics are retrieved."""
+        """WHEN diagnostics are retrieved"""
         result = await async_get_config_entry_diagnostics(hass, entry)
 
-        """THEN hosts and labels are redacted but method remains visible."""
+        """THEN hosts and labels are redacted but method remains visible"""
         for target in result["entry_data"]["targets"]:
             assert target["host"] == "**REDACTED**"
             assert target["label"] == "**REDACTED**"
             # Method should NOT be redacted
             assert target["method"] == "tcp"
 
+    """GIVEN a config entry with coordinator snapshot data"""
     @pytest.mark.asyncio
     async def test_diagnostics_includes_coordinator_data(self) -> None:
-        """GIVEN a config entry with coordinator snapshot data."""
         hass = MagicMock()
         entry = MagicMock()
         entry.data = {"targets": [{"host": "1.1.1.1", "label": "CF", "method": "tcp"}]}
@@ -95,17 +95,17 @@ class TestDiagnostics:
         entry.runtime_data = MagicMock()
         entry.runtime_data.coordinator = coordinator
 
-        """WHEN diagnostics are retrieved."""
+        """WHEN diagnostics are retrieved"""
         result = await async_get_config_entry_diagnostics(hass, entry)
 
-        """THEN coordinator-level summary fields are present and correct."""
+        """THEN coordinator-level summary fields are present and correct"""
         assert result["coordinator"]["wan_is_online"] is True
         assert result["coordinator"]["outage_count"] == 2
         assert result["coordinator"]["target_count"] == 1
 
+    """GIVEN a config entry with coordinator snapshot data"""
     @pytest.mark.asyncio
     async def test_diagnostics_includes_target_details(self) -> None:
-        """GIVEN a config entry with coordinator snapshot data."""
         hass = MagicMock()
         entry = MagicMock()
         entry.data = {"targets": []}
@@ -116,19 +116,19 @@ class TestDiagnostics:
         entry.runtime_data = MagicMock()
         entry.runtime_data.coordinator = coordinator
 
-        """WHEN diagnostics are retrieved."""
+        """WHEN diagnostics are retrieved"""
         result = await async_get_config_entry_diagnostics(hass, entry)
 
-        """THEN per-target diagnostics are present with correct status and window stats."""
+        """THEN per-target diagnostics are present with correct status and window stats"""
         assert "tcp_1_1_1_1" in result["targets"]
         target_diag = result["targets"]["tcp_1_1_1_1"]
         assert target_diag["is_online"] is True
         assert target_diag["outage_count"] == 2
         assert target_diag["current_window"]["avg_latency_ms"] == 15.0
 
+    """GIVEN a config entry with a TCP probe target"""
     @pytest.mark.asyncio
     async def test_diagnostics_method_not_redacted(self) -> None:
-        """GIVEN a config entry with a TCP probe target."""
         hass = MagicMock()
         entry = MagicMock()
         entry.data = {
@@ -143,10 +143,10 @@ class TestDiagnostics:
         entry.runtime_data = MagicMock()
         entry.runtime_data.coordinator = coordinator
 
-        """WHEN diagnostics are retrieved."""
+        """WHEN diagnostics are retrieved"""
         diag = await async_get_config_entry_diagnostics(hass, entry)
 
-        """THEN the probe method is visible and never redacted."""
+        """THEN the probe method is visible and never redacted"""
         targets = diag["entry_data"]["targets"]
         for t in targets:
             assert t.get("method") == "tcp"

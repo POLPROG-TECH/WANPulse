@@ -45,27 +45,29 @@ def _make_entry(
 class TestCoordinatorInit:
     """Tests for coordinator initialization."""
 
+    """GIVEN two TCP probe targets"""
     def test_creates_target_states(self, hass: HomeAssistant) -> None:
-        """GIVEN two TCP probe targets."""
         targets = [
             ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP),
             ProbeTarget(host="8.8.8.8", label="G", method=ProbeMethod.TCP),
         ]
         entry = _make_entry()
         coordinator = WANPulseCoordinator(hass, entry, targets)
+        """WHEN creates target states is evaluated"""
 
-        """THEN internal target states are initialised for each target."""
+        """THEN internal target states are initialised for each target"""
         assert len(coordinator._target_states) == 2
         assert "tcp_1_1_1_1" in coordinator._target_states
         assert "tcp_8_8_8_8" in coordinator._target_states
 
+    """GIVEN a config entry with custom options"""
     def test_reads_options(self, hass: HomeAssistant) -> None:
-        """GIVEN a config entry with custom options."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(scan_interval=30, timeout=5, probe_count=5, failure_threshold=5)
         coordinator = WANPulseCoordinator(hass, entry, targets)
+        """WHEN reads options is evaluated"""
 
-        """THEN the coordinator stores the configured option values."""
+        """THEN the coordinator stores the configured option values"""
         assert coordinator._timeout == 5
         assert coordinator._probe_count == 5
         assert coordinator._failure_threshold == 5
@@ -74,52 +76,52 @@ class TestCoordinatorInit:
 class TestCoordinatorProbing:
     """Tests for probe execution."""
 
+    """GIVEN a coordinator with one TCP target and a successful probe result"""
     @pytest.mark.asyncio
     async def test_successful_probe_cycle(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with one TCP target and a successful probe result."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(probe_count=2)
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_result = ProbeResult(success=True, latency_ms=15.0)
 
-        """WHEN a probe cycle completes successfully."""
+        """WHEN a probe cycle completes successfully"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             return_value=mock_result,
         ):
             snapshot = await coordinator._async_update_data()
 
-        """THEN WAN is online and the target reports no failures."""
+        """THEN WAN is online and the target reports no failures"""
         assert snapshot.wan_is_online is True
         assert "tcp_1_1_1_1" in snapshot.targets
         target_snap = snapshot.targets["tcp_1_1_1_1"]
         assert target_snap.is_online is True
         assert target_snap.consecutive_failures == 0
 
+    """GIVEN a coordinator with failure threshold of 1 and a failing probe"""
     @pytest.mark.asyncio
     async def test_failed_probe_cycle(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with failure threshold of 1 and a failing probe."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(probe_count=1, failure_threshold=1)
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_result = ProbeResult(success=False, error="timeout")
 
-        """WHEN a probe cycle fails."""
+        """WHEN a probe cycle fails"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             return_value=mock_result,
         ):
             snapshot = await coordinator._async_update_data()
 
-        """THEN WAN is offline and consecutive failures are recorded."""
+        """THEN WAN is offline and consecutive failures are recorded"""
         assert snapshot.wan_is_online is False
         target_snap = snapshot.targets["tcp_1_1_1_1"]
         assert target_snap.is_online is False
         assert target_snap.consecutive_failures == 1
 
+    """GIVEN a coordinator with two TCP targets where one succeeds and one fails"""
     @pytest.mark.asyncio
     async def test_partial_failure_keeps_wan_online(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with two TCP targets where one succeeds and one fails."""
         targets = [
             ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP),
             ProbeTarget(host="8.8.8.8", label="G", method=ProbeMethod.TCP),
@@ -139,21 +141,21 @@ class TestCoordinatorProbing:
                 return success
             return failure
 
-        """WHEN a probe cycle runs with mixed results."""
+        """WHEN a probe cycle runs with mixed results"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             side_effect=mock_probe,
         ):
             snapshot = await coordinator._async_update_data()
 
-        """THEN WAN stays online because at least one target succeeded."""
+        """THEN WAN stays online because at least one target succeeded"""
         assert snapshot.wan_is_online is True
         assert snapshot.targets["tcp_1_1_1_1"].is_online is True
         assert snapshot.targets["tcp_8_8_8_8"].is_online is False
 
+    """GIVEN a coordinator with two TCP targets and a probe that fails for one"""
     @pytest.mark.asyncio
     async def test_partial_target_failure(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with two TCP targets and a probe that fails for one."""
         targets = [
             ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP),
             ProbeTarget(host="8.8.8.8", label="Google", method=ProbeMethod.TCP),
@@ -169,14 +171,14 @@ class TestCoordinatorProbing:
                 return success
             return fail
 
-        """WHEN a probe cycle runs."""
+        """WHEN a probe cycle runs"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             side_effect=mock_probe,
         ):
             snapshot = await coordinator._async_update_data()
 
-        """THEN one target is online, one is offline, and aggregate WAN is online."""
+        """THEN one target is online, one is offline, and aggregate WAN is online"""
         # One target online, one offline - aggregate should be online
         assert snapshot.wan_is_online is True
         assert snapshot.targets["tcp_1_1_1_1"].is_online is True
@@ -188,16 +190,16 @@ class TestCoordinatorProbing:
 class TestOutageTracking:
     """Tests for outage state management."""
 
+    """GIVEN a coordinator with failure threshold of 2 and a failing probe"""
     @pytest.mark.asyncio
     async def test_outage_detection(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with failure threshold of 2 and a failing probe."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(probe_count=1, failure_threshold=2)
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_fail = ProbeResult(success=False, error="timeout")
 
-        """WHEN two consecutive probe cycles fail."""
-        """THEN an outage is detected."""
+        """WHEN two consecutive probe cycles fail"""
+        """THEN an outage is detected"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             return_value=mock_fail,
@@ -212,16 +214,16 @@ class TestOutageTracking:
             assert snapshot.targets["tcp_1_1_1_1"].outage_count == 1
             assert snapshot.targets["tcp_1_1_1_1"].consecutive_failures == 2
 
+    """GIVEN a coordinator with failure threshold of 1"""
     @pytest.mark.asyncio
     async def test_recovery_from_outage(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with failure threshold of 1."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(probe_count=1, failure_threshold=1)
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_fail = ProbeResult(success=False, error="timeout")
         mock_success = ProbeResult(success=True, latency_ms=10.0)
 
-        """WHEN a probe cycle fails and a subsequent one succeeds."""
+        """WHEN a probe cycle fails and a subsequent one succeeds"""
         # Fail first
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
@@ -237,22 +239,22 @@ class TestOutageTracking:
         ):
             snapshot = await coordinator._async_update_data()
 
-            """THEN the target recovers but the outage count is preserved."""
+            """THEN the target recovers but the outage count is preserved"""
             assert snapshot.targets["tcp_1_1_1_1"].is_online is True
             assert snapshot.targets["tcp_1_1_1_1"].consecutive_failures == 0
             # Outage count doesn't decrease
             assert snapshot.targets["tcp_1_1_1_1"].outage_count == 1
 
+    """GIVEN a coordinator with failure threshold of 1"""
     @pytest.mark.asyncio
     async def test_outage_duration_accumulates(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with failure threshold of 1."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(probe_count=1, failure_threshold=1)
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_fail = ProbeResult(success=False, error="timeout")
         mock_success = ProbeResult(success=True, latency_ms=10.0)
 
-        """WHEN a failure causes an outage followed by recovery."""
+        """WHEN a failure causes an outage followed by recovery"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             return_value=mock_fail,
@@ -265,16 +267,16 @@ class TestOutageTracking:
         ):
             snapshot = await coordinator._async_update_data()
 
-        """THEN the total outage duration is non-negative."""
+        """THEN the total outage duration is non-negative"""
         assert snapshot.targets["tcp_1_1_1_1"].total_outage_duration.total_seconds() >= 0
 
 
 class TestAggregateMetrics:
     """Tests for aggregate statistics."""
 
+    """GIVEN a coordinator with two TCP targets and all probes succeeding"""
     @pytest.mark.asyncio
     async def test_aggregate_with_all_online(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with two TCP targets and all probes succeeding."""
         targets = [
             ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP),
             ProbeTarget(host="8.8.8.8", label="G", method=ProbeMethod.TCP),
@@ -283,32 +285,32 @@ class TestAggregateMetrics:
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_result = ProbeResult(success=True, latency_ms=15.0)
 
-        """WHEN a probe cycle completes."""
+        """WHEN a probe cycle completes"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             return_value=mock_result,
         ):
             snapshot = await coordinator._async_update_data()
 
-        """THEN aggregate metrics show 100% availability with latency data."""
+        """THEN aggregate metrics show 100% availability with latency data"""
         assert snapshot.wan_is_online is True
         assert snapshot.aggregate_current.availability_pct == 100.0
         assert snapshot.aggregate_current.avg_latency_ms is not None
 
+    """GIVEN a coordinator with failure threshold of 1 and a failing probe"""
     @pytest.mark.asyncio
     async def test_aggregate_outage_count(self, hass: HomeAssistant) -> None:
-        """GIVEN a coordinator with failure threshold of 1 and a failing probe."""
         targets = [ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)]
         entry = _make_entry(probe_count=1, failure_threshold=1)
         coordinator = WANPulseCoordinator(hass, entry, targets)
         mock_fail = ProbeResult(success=False, error="timeout")
 
-        """WHEN a probe cycle fails."""
+        """WHEN a probe cycle fails"""
         with patch(
             "custom_components.wanpulse.probes.tcp.TCPProbeEngine.async_probe",
             return_value=mock_fail,
         ):
             snapshot = await coordinator._async_update_data()
 
-            """THEN the aggregate outage count is incremented."""
+            """THEN the aggregate outage count is incremented"""
             assert snapshot.outage_count == 1

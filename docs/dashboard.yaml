@@ -160,20 +160,20 @@ views:
 
           **What the sensors mean:**
 
-          - **Internet connection** — Is your internet reachable right now?
+          - **Internet connection** - Is your internet reachable right now?
 
-          - **Latency** — How fast your connection responds (lower = better, <50ms is great)
+          - **Latency** - How fast your connection responds (lower = better, <50ms is great)
 
-          - **Packet loss** — Percentage of failed probes (0% = perfect)
+          - **Packet loss** - Percentage of failed probes (0% = perfect)
 
-          - **Jitter** — Variation in latency (lower = more stable)
+          - **Jitter** - Variation in latency (lower = more stable)
 
-          - **Availability** — Percentage of time internet was up in the time window
+          - **Availability** - Percentage of time internet was up in the time window
 
-          - **Outages** — Number of detected connection drops
+          - **Outages** - Number of detected connection drops
 
 
-          **Test Connection Now** button runs an immediate probe cycle — useful when
+          **Test Connection Now** button runs an immediate probe cycle - useful when
           troubleshooting connectivity issues or after changing router settings.
 
 

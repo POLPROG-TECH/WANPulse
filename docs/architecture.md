@@ -2,17 +2,17 @@
 
 ## Design Goals
 
-1. **Portable** — Works on Home Assistant OS, Container, Core, and Supervised without requiring elevated privileges
-2. **Efficient** — Minimal network traffic and system resources; bounded memory usage
-3. **Correct** — Accurate latency, jitter, and availability metrics with well-defined failure semantics
-4. **Maintainable** — Clean module boundaries, typed Python, immutable data flow, thin entities
-5. **HA-native** — Uses DataUpdateCoordinator, ConfigEntry.runtime_data, has_entity_name, translation keys, and other current HA patterns
+1. **Portable** - Works on Home Assistant OS, Container, Core, and Supervised without requiring elevated privileges
+2. **Efficient** - Minimal network traffic and system resources; bounded memory usage
+3. **Correct** - Accurate latency, jitter, and availability metrics with well-defined failure semantics
+4. **Maintainable** - Clean module boundaries, typed Python, immutable data flow, thin entities
+5. **HA-native** - Uses DataUpdateCoordinator, ConfigEntry.runtime_data, has_entity_name, translation keys, and other current HA patterns
 
 ## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   Config Entry                       │
+│                   Config Entry                      │
 │  data: {targets: [...]}                             │
 │  options: {scan_interval, timeout, probe_count, ...}│
 │  runtime_data: WANPulseRuntimeData(coordinator)     │
@@ -20,34 +20,34 @@
               │
               ▼
 ┌─────────────────────────────────────────────────────┐
-│              WANPulseCoordinator                     │
-│  DataUpdateCoordinator[CoordinatorSnapshot]          │
-│                                                      │
+│              WANPulseCoordinator                    │
+│  DataUpdateCoordinator[CoordinatorSnapshot]         │
+│                                                     │
 │  ┌──────────────┐  ┌──────────────┐                 │
 │  │ _TargetState  │  │ _TargetState  │  (per target) │
-│  │  measurements │  │  measurements │                │
-│  │  outage state │  │  outage state │                │
+│  │  measurements │  │  measurements │               │
+│  │  outage state │  │  outage state │               │
 │  └──────┬───────┘  └──────┬───────┘                 │
-│         │                  │                         │
-│         ▼                  ▼                         │
+│         │                  │                        │
+│         ▼                  ▼                        │
 │  ┌──────────────────────────────────┐               │
 │  │     Probe Engines (async)        │               │
 │  │  TCPProbeEngine                  │               │
 │  │  HTTPProbeEngine                 │               │
 │  │  DNSProbeEngine                  │               │
 │  └──────────────────────────────────┘               │
-│                                                      │
-│  Output: CoordinatorSnapshot (immutable)             │
+│                                                     │
+│  Output: CoordinatorSnapshot (immutable)            │
 └─────────────┬───────────────────────────────────────┘
               │
               ▼
 ┌─────────────────────────────────────────────────────┐
-│              Entity Platforms                         │
-│  binary_sensor.py  — WAN/target online status       │
-│  sensor.py         — latency, jitter, loss, etc.    │
-│  button.py         — manual probe trigger           │
-│                                                      │
-│  Entities are thin: read snapshot, extract value     │
+│              Entity Platforms                       │
+│  binary_sensor.py  - WAN/target online status       │
+│  sensor.py         - latency, jitter, loss, etc.    │
+│  button.py         - manual probe trigger           │
+│                                                     │
+│  Entities are thin: read snapshot, extract value    │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -61,11 +61,11 @@ class ProbeEngine(ABC):
     async def async_probe(self, target: ProbeTarget, timeout: float) -> ProbeResult: ...
 ```
 
-**TCP** — `asyncio.open_connection` to host:port (default 443). Measures connection establishment time. Most portable approach.
+**TCP** - `asyncio.open_connection` to host:port (default 443). Measures connection establishment time. Most portable approach.
 
-**HTTP** — `aiohttp.ClientSession.head()` to a URL. Measures full HTTP response time. Tests through proxies.
+**HTTP** - `aiohttp.ClientSession.head()` to a URL. Measures full HTTP response time. Tests through proxies.
 
-**DNS** — `asyncio.getaddrinfo()` for hostname resolution. Measures DNS query time via system resolver.
+**DNS** - `asyncio.getaddrinfo()` for hostname resolution. Measures DNS query time via system resolver.
 
 ### Why No ICMP?
 
@@ -94,9 +94,9 @@ Entity.native_value (extracts single field from snapshot)
 
 ### Rolling Windows
 
-- **Current** — Last `scan_interval × 5` seconds (e.g., 5 minutes at 60s interval)
-- **1 hour** — Last 3600 seconds
-- **24 hours** — Last 86400 seconds
+- **Current** - Last `scan_interval × 5` seconds (e.g., 5 minutes at 60s interval)
+- **1 hour** - Last 3600 seconds
+- **24 hours** - Last 86400 seconds
 
 Measurements are stored in bounded deques (`maxlen=9000` per target, sufficient for 24h at 10s intervals).
 
@@ -135,7 +135,7 @@ This prevents entity bloat while giving power users access to detailed metrics.
 ### Recorder Interaction
 
 - Sensors with `state_class` are automatically tracked by the HA recorder
-- No custom database or storage — rely on HA's built-in long-term statistics
+- No custom database or storage - rely on HA's built-in long-term statistics
 - In-memory rolling windows are for live dashboard display
 - After restart, windows rebuild naturally as new measurements accumulate
 

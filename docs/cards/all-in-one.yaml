@@ -1,4 +1,4 @@
-# WANPulse — All-in-One Compact Card
+# WANPulse - All-in-One Compact Card
 #
 # A single card with everything: status tiles, gauges, chart, and button.
 # Perfect if you want one card on your main dashboard that shows everything.
@@ -80,7 +80,7 @@ cards:
 
   # Latency + jitter chart
   - type: history-graph
-    title: "📊 Latency & Jitter — 24h"
+    title: "📊 Latency & Jitter - 24h"
     hours_to_show: 24
     entities:
       - entity: sensor.wanpulse_average_latency
@@ -90,7 +90,7 @@ cards:
 
   # Packet loss chart
   - type: history-graph
-    title: "📉 Packet Loss — 24h"
+    title: "📉 Packet Loss - 24h"
     hours_to_show: 24
     entities:
       - entity: sensor.wanpulse_packet_loss

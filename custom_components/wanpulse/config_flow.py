@@ -68,10 +68,6 @@ _HOST_RE = re.compile(
 
 def _is_valid_host(host: str, method: str) -> bool:
     """Check if host has a valid format for the given probe method."""
-    if method == "http":
-        if host.startswith(("http://", "https://")):
-            return bool(_HOST_RE.match(host))
-        return bool(_HOST_RE.match(host))
     return bool(_HOST_RE.match(host))
 
 
@@ -113,6 +109,55 @@ def _validate_targets(targets: list[dict[str, str]]) -> str | None:
     return None
 
 
+async def _probe_http(host: str, timeout: float) -> None:
+    """Perform a lightweight HTTP HEAD reachability check."""
+    import aiohttp
+
+    url = host if host.startswith(("http://", "https://")) else f"https://{host}"
+    async with (
+        asyncio.timeout(timeout),
+        aiohttp.ClientSession() as session,
+        session.head(url, allow_redirects=True),
+    ):
+        return
+
+
+async def _probe_dns(host: str, timeout: float) -> None:
+    """Perform a DNS resolution reachability check."""
+    dns_host = host.replace("https://", "").replace("http://", "")
+    await asyncio.wait_for(
+        asyncio.get_event_loop().getaddrinfo(dns_host, None),
+        timeout=timeout,
+    )
+
+
+def _parse_tcp_host_port(host: str) -> tuple[str, int]:
+    """Parse an optional ``host:port`` suffix and return (host, port)."""
+    if ":" in host and not host.startswith("["):
+        tcp_host, _, port_str = host.rpartition(":")
+        if port_str.isdigit():
+            return tcp_host, int(port_str)
+    return host, 443
+
+
+async def _probe_tcp(host: str, timeout: float) -> None:
+    """Perform a TCP connection reachability check."""
+    tcp_host, port = _parse_tcp_host_port(host)
+    _reader, writer = await asyncio.wait_for(
+        asyncio.open_connection(tcp_host, port),
+        timeout=timeout,
+    )
+    writer.close()
+    await writer.wait_closed()
+
+
+_REACHABILITY_PROBES = {
+    "http": _probe_http,
+    "dns": _probe_dns,
+    "tcp": _probe_tcp,
+}
+
+
 async def _test_target_reachability(
     targets: list[dict[str, str]],
     timeout: float = 5.0,
@@ -123,35 +168,9 @@ async def _test_target_reachability(
         host = target["host"]
         method = target.get("method", "tcp")
         label = target.get("label", host)
+        probe = _REACHABILITY_PROBES.get(method, _probe_tcp)
         try:
-            if method == "http":
-                url = host if host.startswith(("http://", "https://")) else f"https://{host}"
-                import aiohttp
-
-                async with asyncio.timeout(timeout):
-                    async with aiohttp.ClientSession() as session:
-                        async with session.head(url, allow_redirects=True):
-                            pass
-            elif method == "dns":
-                dns_host = host.replace("https://", "").replace("http://", "")
-                await asyncio.wait_for(
-                    asyncio.get_event_loop().getaddrinfo(dns_host, None),
-                    timeout=timeout,
-                )
-            else:  # tcp
-                port = 443
-                tcp_host = host
-                if ":" in host and not host.startswith("["):
-                    parts = host.rsplit(":", 1)
-                    if parts[1].isdigit():
-                        tcp_host = parts[0]
-                        port = int(parts[1])
-                _reader, writer = await asyncio.wait_for(
-                    asyncio.open_connection(tcp_host, port),
-                    timeout=timeout,
-                )
-                writer.close()
-                await writer.wait_closed()
+            await probe(host, timeout)
         except Exception:  # noqa: BLE001
             unreachable.append(label)
     return unreachable

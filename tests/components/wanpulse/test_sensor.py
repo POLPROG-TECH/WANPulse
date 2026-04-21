@@ -78,39 +78,43 @@ def _make_snapshot(
 class TestAggregateSensorDescriptions:
     """Tests for aggregate sensor descriptions."""
 
+    """GIVEN all aggregate sensor descriptions"""
     def test_all_descriptions_have_value_fn(self) -> None:
-        """GIVEN all aggregate sensor descriptions."""
+        """WHEN all descriptions have value fn is evaluated"""
 
-        """THEN each description has a callable value_fn."""
+        """THEN each description has a callable value_fn"""
         for desc in AGGREGATE_SENSORS:
             assert callable(desc.value_fn)
 
+    """GIVEN a snapshot with 25.3ms latency"""
     def test_average_latency_value(self) -> None:
-        """GIVEN a snapshot with 25.3ms latency."""
         snapshot = _make_snapshot(latency=25.3)
         desc = next(d for d in AGGREGATE_SENSORS if d.key == "average_latency")
+        """WHEN average latency value is evaluated"""
 
-        """THEN the average latency equals 25.3."""
+        """THEN the average latency equals 25.3"""
         assert desc.value_fn(snapshot) == 25.3
 
+    """GIVEN a snapshot with 5.5% packet loss"""
     def test_packet_loss_value(self) -> None:
-        """GIVEN a snapshot with 5.5% packet loss."""
         snapshot = _make_snapshot(loss=5.5)
         desc = next(d for d in AGGREGATE_SENSORS if d.key == "packet_loss")
+        """WHEN packet loss value is evaluated"""
 
-        """THEN the packet loss equals 5.5."""
+        """THEN the packet loss equals 5.5"""
         assert desc.value_fn(snapshot) == 5.5
 
+    """GIVEN a snapshot with 99.5% availability"""
     def test_availability_1h_value(self) -> None:
-        """GIVEN a snapshot with 99.5% availability."""
         snapshot = _make_snapshot(availability=99.5)
         desc = next(d for d in AGGREGATE_SENSORS if d.key == "availability_1h")
+        """WHEN availability 1h value is evaluated"""
 
-        """THEN the 1-hour availability equals 99.5."""
+        """THEN the 1-hour availability equals 99.5"""
         assert desc.value_fn(snapshot) == 99.5
 
+    """GIVEN a snapshot with 3 outages in 24 hours"""
     def test_outage_count_value(self) -> None:
-        """GIVEN a snapshot with 3 outages in 24 hours."""
         snapshot = _make_snapshot()
         snapshot = CoordinatorSnapshot(
             targets=snapshot.targets,
@@ -122,23 +126,25 @@ class TestAggregateSensorDescriptions:
             last_update=snapshot.last_update,
         )
         desc = next(d for d in AGGREGATE_SENSORS if d.key == "outage_count_24h")
+        """WHEN outage count value is evaluated"""
 
-        """THEN the outage count equals 3."""
+        """THEN the outage count equals 3"""
         assert desc.value_fn(snapshot) == 3
 
 
 class TestTargetSensorDescriptions:
     """Tests for target sensor descriptions."""
 
+    """GIVEN all target sensor descriptions"""
     def test_all_descriptions_have_value_fn(self) -> None:
-        """GIVEN all target sensor descriptions."""
+        """WHEN all descriptions have value fn is evaluated"""
 
-        """THEN each description has a callable value_fn."""
+        """THEN each description has a callable value_fn"""
         for desc in TARGET_SENSORS:
             assert callable(desc.value_fn)
 
+    """GIVEN a target snapshot with 12.5ms latency"""
     def test_target_latency_value(self) -> None:
-        """GIVEN a target snapshot with 12.5ms latency."""
         target = ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)
         target_snap = TargetSnapshot(
             target=target,
@@ -146,64 +152,66 @@ class TestTargetSensorDescriptions:
             current=WindowStats(avg_latency_ms=12.5),
         )
         desc = next(d for d in TARGET_SENSORS if d.key == "target_latency")
+        """WHEN target latency value is evaluated"""
 
-        """THEN the target latency equals 12.5."""
+        """THEN the target latency equals 12.5"""
         assert desc.value_fn(target_snap) == 12.5
 
+    """GIVEN a target snapshot with 10% packet loss"""
     def test_target_packet_loss_value(self) -> None:
-        """GIVEN a target snapshot with 10% packet loss."""
         target = ProbeTarget(host="1.1.1.1", label="CF", method=ProbeMethod.TCP)
         target_snap = TargetSnapshot(
             target=target,
             current=WindowStats(packet_loss_pct=10.0),
         )
         desc = next(d for d in TARGET_SENSORS if d.key == "target_packet_loss")
+        """WHEN target packet loss value is evaluated"""
 
-        """THEN the target packet loss equals 10.0."""
+        """THEN the target packet loss equals 10.0"""
         assert desc.value_fn(target_snap) == 10.0
 
 
 class TestSensorEntity:
     """Tests for sensor entity behavior."""
 
+    """GIVEN a coordinator with a snapshot and the first aggregate sensor description"""
     def test_aggregate_sensor_unique_id(self) -> None:
-        """GIVEN a coordinator with a snapshot and the first aggregate sensor description."""
         snapshot = _make_snapshot()
         coordinator = _make_coordinator(snapshot)
         desc = AGGREGATE_SENSORS[0]  # average_latency
 
-        """WHEN creating an aggregate sensor entity."""
+        """WHEN creating an aggregate sensor entity"""
         sensor = WANPulseAggregateSensor(coordinator, "test_entry", desc)
 
-        """THEN the unique_id combines the entry id and sensor key."""
+        """THEN the unique_id combines the entry id and sensor key"""
         assert sensor.unique_id == f"test_entry_{desc.key}"
 
+    """GIVEN a coordinator with a snapshot and the first aggregate sensor description"""
     def test_aggregate_sensor_suggested_object_id(self) -> None:
-        """GIVEN a coordinator with a snapshot and the first aggregate sensor description."""
         snapshot = _make_snapshot()
         coordinator = _make_coordinator(snapshot)
         desc = AGGREGATE_SENSORS[0]  # average_latency
 
-        """WHEN creating an aggregate sensor entity."""
+        """WHEN creating an aggregate sensor entity"""
         sensor = WANPulseAggregateSensor(coordinator, "test_entry", desc)
 
-        """THEN the suggested_object_id equals the sensor key."""
+        """THEN the suggested_object_id equals the sensor key"""
         assert sensor.suggested_object_id == desc.key
 
+    """GIVEN a coordinator with a snapshot and the first target sensor description"""
     def test_target_sensor_unique_id(self) -> None:
-        """GIVEN a coordinator with a snapshot and the first target sensor description."""
         snapshot = _make_snapshot()
         coordinator = _make_coordinator(snapshot)
         desc = TARGET_SENSORS[0]
 
-        """WHEN creating a target sensor entity for tcp_1_1_1_1."""
+        """WHEN creating a target sensor entity for tcp_1_1_1_1"""
         sensor = WANPulseTargetSensor(coordinator, "test_entry", "tcp_1_1_1_1", "CF", desc)
 
-        """THEN the unique_id combines entry id, target slug, and sensor key."""
+        """THEN the unique_id combines entry id, target slug, and sensor key"""
         assert sensor.unique_id == f"test_entry_tcp_1_1_1_1_{desc.key}"
 
+    """GIVEN a coordinator with a snapshot and the first target sensor description"""
     def test_target_sensor_suggested_object_id(self) -> None:
-        """GIVEN a coordinator with a snapshot and the first target sensor description."""
         snapshot = _make_snapshot()
         coordinator = _make_coordinator(snapshot)
         desc = TARGET_SENSORS[0]
@@ -213,29 +221,29 @@ class TestSensorEntity:
             coordinator, "test_entry", "tcp_1_1_1_1", "Cloudflare DNS", desc
         )
 
-        """THEN the suggested_object_id is the slugified label plus sensor key."""
+        """THEN the suggested_object_id is the slugified label plus sensor key"""
         assert sensor.suggested_object_id == f"cloudflare_dns_{desc.key}"
 
+    """GIVEN a coordinator with no data (None)"""
     def test_aggregate_sensor_value_none_when_no_data(self) -> None:
-        """GIVEN a coordinator with no data (None)."""
         coordinator = MagicMock()
         coordinator.data = None
         desc = AGGREGATE_SENSORS[0]
 
-        """WHEN reading the native_value of the aggregate sensor."""
+        """WHEN reading the native_value of the aggregate sensor"""
         sensor = WANPulseAggregateSensor(coordinator, "test_entry", desc)
 
-        """THEN the value is None."""
+        """THEN the value is None"""
         assert sensor.native_value is None
 
+    """GIVEN a coordinator whose snapshot does not contain the requested target"""
     def test_target_sensor_value_none_when_target_missing(self) -> None:
-        """GIVEN a coordinator whose snapshot does not contain the requested target."""
         snapshot = _make_snapshot()
         coordinator = _make_coordinator(snapshot)
         desc = TARGET_SENSORS[0]
 
-        """WHEN reading the native_value for a nonexistent target."""
+        """WHEN reading the native_value for a nonexistent target"""
         sensor = WANPulseTargetSensor(coordinator, "test_entry", "nonexistent_target", "X", desc)
 
-        """THEN the value is None."""
+        """THEN the value is None"""
         assert sensor.native_value is None
